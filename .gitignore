@@ -1,0 +1,15 @@
+.DS_Store
+*.orig
+*.jar.properties
+*.class
+backup/*
+out/*
+*/target
+.idea/misc.xml
+.idea/modules.xml
+.idea/workspace.xml
+.idea/libraries/*
+**/*.iml
+*.iml
+target/*
+.idea/*

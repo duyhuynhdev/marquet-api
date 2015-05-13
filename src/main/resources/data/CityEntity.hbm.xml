@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.marqet.WebServer.pojo.CityEntity" table="City" schema="" catalog="marqet">
+        <id name="code">
+            <column name="code" sql-type="varchar" length="10" not-null="true"/>
+        </id>
+        <property name="name">
+            <column name="name" sql-type="varchar" length="50" not-null="true"/>
+        </property>
+        <property name="countryCode">
+            <column name="countryCode" sql-type="varchar" length="5" not-null="true"/>
+        </property>
+    </class>
+</hibernate-mapping>

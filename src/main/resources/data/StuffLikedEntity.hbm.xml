@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.marqet.WebServer.pojo.StuffLikedEntity" table="StuffLiked" schema="" catalog="marqet">
+        <id name="id">
+            <column name="id" sql-type="bigint" not-null="true"/>
+        </id>
+        <property name="buyerEmail">
+            <column name="buyerEmail" sql-type="varchar" length="100" not-null="true"/>
+        </property>
+        <property name="productId">
+            <column name="productId" sql-type="bigint" not-null="true"/>
+        </property>
+    </class>
+</hibernate-mapping>

@@ -1,0 +1,42 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.marqet.WebServer.pojo.UserEntity" table="User" schema="" catalog="marqet">
+        <id name="email">
+            <column name="email" sql-type="varchar" length="100" not-null="true"/>
+        </id>
+        <property name="joinDate">
+            <column name="joinDate" sql-type="bigint" not-null="true"/>
+        </property>
+        <property name="userName">
+            <column name="userName" sql-type="varchar" length="50" not-null="true"/>
+        </property>
+        <property name="password">
+            <column name="password" sql-type="varchar" length="50" not-null="true"/>
+        </property>
+        <property name="telephone">
+            <column name="telephone" sql-type="varchar" length="20" not-null="true"/>
+        </property>
+        <property name="profilePicture">
+            <column name="profilePicture" sql-type="text" length="65535" not-null="true"/>
+        </property>
+        <property name="point">
+            <column name="point" sql-type="bigint" not-null="true"/>
+        </property>
+        <property name="broadcastId">
+            <column name="broadcastId" sql-type="varchar" length="100" not-null="true"/>
+        </property>
+        <property name="countryCode">
+            <column name="countryCode" sql-type="varchar" length="10" not-null="true"/>
+        </property>
+        <property name="cityCode">
+            <column name="cityCode" sql-type="varchar" length="10" not-null="true"/>
+        </property>
+        <property name="stateCode">
+            <column name="stateCode" sql-type="varchar" length="10" not-null="true"/>
+        </property>
+    </class>
+</hibernate-mapping>

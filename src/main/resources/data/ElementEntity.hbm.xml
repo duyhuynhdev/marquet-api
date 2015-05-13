@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!DOCTYPE hibernate-mapping PUBLIC
+    "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+    "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+    <class name="com.marqet.WebServer.pojo.ElementEntity" table="Element" schema="" catalog="marqet">
+        <id name="id">
+            <column name="id" sql-type="bigint" not-null="true"/>
+        </id>
+        <property name="logo">
+            <column name="logo" sql-type="text" length="65535" not-null="true"/>
+        </property>
+        <property name="defaultAvatar">
+            <column name="defaultAvatar" sql-type="text" length="65535" not-null="true"/>
+        </property>
+        <property name="bigBannerInfo">
+            <column name="bigBannerInfo" sql-type="text" length="65535" not-null="true"/>
+        </property>
+        <property name="smallBannerInfo">
+            <column name="smallBannerInfo" sql-type="text" length="65535" not-null="true"/>
+        </property>
+        <property name="pointLevel">
+            <column name="pointLevel" sql-type="text" length="65535" not-null="true"/>
+        </property>
+    </class>
+</hibernate-mapping>
