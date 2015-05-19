@@ -60,7 +60,7 @@ and open the template in the editor.
         $.ajax({
             url: apiName,
             data: jsonData,
-            type: 'GET',
+            type: 'POST',
             error: function () {
                 console.log("error occured!!!");
             },

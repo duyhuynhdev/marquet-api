@@ -21,7 +21,7 @@
             <column name="date" sql-type="bigint" not-null="true"/>
         </property>
         <property name="isArchive">
-            <column name="isArchive" sql-type="tinyint" not-null="true"/>
+            <column name="isArchive" sql-type="int" not-null="true"/>
         </property>
         <property name="status">
             <column name="status" sql-type="varchar" length="10" not-null="true"/>

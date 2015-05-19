@@ -389,6 +389,47 @@
         <servlet-name>AddWatchListAPI</servlet-name>
         <url-pattern>/AddWatchListAPI</url-pattern>
     </servlet-mapping>
+    <!--**MESSAGE**-->
+    <servlet>
+        <servlet-name>GetListMessageAllAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.GetListMessageAllAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetListMessageAllAPI</servlet-name>
+        <url-pattern>/GetListMessageAllAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>GetListMessageBuyerAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.GetListMessageBuyerAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetListMessageBuyerAPI</servlet-name>
+        <url-pattern>/GetListMessageBuyerAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>GetListMessageSellerAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.GetListMessageSellerAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetListMessageSellerAPI</servlet-name>
+        <url-pattern>/GetListMessageSellerAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>GetListSubMessageAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.GetListSubMessageAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetListSubMessageAPI</servlet-name>
+        <url-pattern>/GetListSubMessageAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>PostSubMessageAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.PostSubMessageAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PostSubMessageAPI</servlet-name>
+        <url-pattern>/PostSubMessageAPI</url-pattern>
+    </servlet-mapping>
     <!--**BROADCAST**-->
     <servlet>
         <servlet-name>GCMBroadcast</servlet-name>
@@ -398,6 +439,7 @@
         <servlet-name>GCMBroadcast</servlet-name>
         <url-pattern>/GCMBroadcast</url-pattern>
     </servlet-mapping>
+
     <!-- ********************************************************************************************************* -->
     <!-- SERVLET -->
     <!--**Account**-->

@@ -109,4 +109,12 @@ public class OfferEntity {
         jsonObject.put("offerPrice", this.offerPrice);
         return jsonObject;
     }
+    public JSONObject toDetailJSON() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", this.id);
+        jsonObject.put("buyerEmail", this.buyerEmail);
+        jsonObject.put("productId", this.productId);
+        jsonObject.put("offerPrice", this.offerPrice);
+        return jsonObject;
+    }
 }

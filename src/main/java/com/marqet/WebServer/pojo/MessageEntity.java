@@ -13,8 +13,8 @@ public class MessageEntity {
     private long id;
     private String content;
     private long date;
-    private byte isArchive;
-    private String status;
+    private int isArchive;
+    private int status;
     private String senderEmail;
     private String receiverEmail;
     private long productId;
@@ -85,21 +85,21 @@ public class MessageEntity {
 
     @Basic
     @Column(name = "isArchive", nullable = false, insertable = true, updatable = true)
-    public byte getIsArchive() {
+    public int getIsArchive() {
         return isArchive;
     }
 
-    public void setIsArchive(byte isArchive) {
+    public void setIsArchive(int isArchive) {
         this.isArchive = isArchive;
     }
 
     @Basic
-    @Column(name = "status", nullable = false, insertable = true, updatable = true, length = 10)
-    public String getStatus() {
+    @Column(name = "status", nullable = false, insertable = true, updatable = true)
+    public int getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(int status) {
         this.status = status;
     }
 
@@ -137,7 +137,7 @@ public class MessageEntity {
         if (receiverEmail != null ? !receiverEmail.equals(that.receiverEmail) : that.receiverEmail != null)
             return false;
         if (senderEmail != null ? !senderEmail.equals(that.senderEmail) : that.senderEmail != null) return false;
-        if (status != null ? !status.equals(that.status) : that.status != null) return false;
+        if (status != that.status) return false;;
         if (productId != that.productId) return false;
         if (offerId != that.offerId) return false;
         return true;
@@ -150,8 +150,8 @@ public class MessageEntity {
         result = 31 * result + (int) (date ^ (date >>> 32));
         result = 31 * result + (int) (productId ^ (productId >>> 32));
         result = 31 * result + (int) (offerId ^ (offerId >>> 32));
-        result = 31 * result + (int) isArchive;
-        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + isArchive;
+        result = 31 * result + status;
         result = 31 * result + (senderEmail != null ? senderEmail.hashCode() : 0);
         result = 31 * result + (receiverEmail != null ? receiverEmail.hashCode() : 0);
         return result;

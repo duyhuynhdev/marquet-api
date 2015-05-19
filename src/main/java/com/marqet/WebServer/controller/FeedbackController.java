@@ -5,6 +5,7 @@ import com.marqet.WebServer.pojo.FeedbackEntity;
 import com.marqet.WebServer.util.Database;
 import com.marqet.WebServer.util.DateTimeUtil;
 import com.marqet.WebServer.util.IdGenerator;
+import com.marqet.WebServer.util.TempData;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -29,6 +30,9 @@ public class FeedbackController {
                 listBuyerFeedback = new ArrayList<>();
             if (listSellerFeedback == null)
                 listSellerFeedback = new ArrayList<>();
+            if(listBuyerFeedback.isEmpty()&&listSellerFeedback.isEmpty()&& TempData.isTemp){
+                listSellerFeedback = TempData.tempFeedback(email, false);
+            }
             listBuyerFeedback.addAll(listSellerFeedback);
             JSONArray arrAll = getListFeedback(listBuyerFeedback,startIdx,numFeedback);
             return result.put(ResponseController.CONTENT, arrAll);
@@ -42,6 +46,9 @@ public class FeedbackController {
             List<Long> listSellerFeedback = database.getSellerFeedbackRFEmail().get(email);
             if (listSellerFeedback == null)
                 listSellerFeedback = new ArrayList<>();
+            if(listSellerFeedback.isEmpty()&& TempData.isTemp){
+                listSellerFeedback = TempData.tempFeedback(email,false);
+            }
             JSONArray arrSeller = getListFeedback(listSellerFeedback, startIdx, numFeedback);
             return result.put(ResponseController.CONTENT, arrSeller);
         } catch (Exception ex) {
@@ -54,6 +61,9 @@ public class FeedbackController {
             List<Long> listBuyerFeedback = database.getBuyerFeedbackRFEmail().get(email);
             if (listBuyerFeedback == null)
                 listBuyerFeedback = new ArrayList<>();
+            if(listBuyerFeedback.isEmpty()&& TempData.isTemp){
+                listBuyerFeedback = TempData.tempFeedback(email,true);
+            }
             JSONArray arrBuyer = getListFeedback(listBuyerFeedback,startIdx,numFeedback);
             return result.put(ResponseController.CONTENT, arrBuyer);
         } catch (Exception ex) {

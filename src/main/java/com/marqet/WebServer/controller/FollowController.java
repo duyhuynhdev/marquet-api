@@ -17,17 +17,21 @@ public class FollowController {
     private FollowDao dao = new FollowDao();
     private Database database = Database.getInstance();
 
-    public JSONObject getListFollower(String emailMe, String emailView,  int startIdx, int numUser) {
+    public JSONObject getListFollower(String emailMe, String emailView, int startIdx, int numUser) {
         try {
             JSONObject result = ResponseController.createSuccessJSON();
             List<String> followers = database.getFollowerRF().get(emailView);
             List<String> followings = database.getFollowingRF().get(emailMe);
             JSONArray followerList = new JSONArray();
             if (followers == null) {
-                //return result.put(ResponseController.CONTENT, followerList);
-                followers = TempData.tempFollow(emailView);
-                if (followers.size() > 3)
-                    followings = followers.subList(0, 3);
+                if (TempData.isTemp) {
+                    followers = TempData.tempFollow(emailView);
+                    if (followers.size() > 3)
+                        followings = followers.subList(0, 3);
+                } else {
+                    return result.put(ResponseController.CONTENT, followerList);
+                }
+
             }
             int endIdx = startIdx + numUser;
             if (endIdx > followers.size() - 1)
@@ -65,10 +69,13 @@ public class FollowController {
             List<String> followingsMe = database.getFollowingRF().get(emailMe);
             JSONArray followingList = new JSONArray();
             if (followings == null) {
-                //return result.put(ResponseController.CONTENT, followingList);
-                followings = TempData.tempFollow(emailView);
-                if (followings.size() > 3)
-                    followingsMe = TempData.tempFollow(emailMe).subList(0, 3);
+                if (TempData.isTemp) {
+                    followings = TempData.tempFollow(emailView);
+                    if (followings.size() > 3)
+                        followingsMe = TempData.tempFollow(emailMe).subList(0, 3);
+                } else {
+                    return result.put(ResponseController.CONTENT, followingList);
+                }
 
             }
             int endIdx = startIdx + numUser;

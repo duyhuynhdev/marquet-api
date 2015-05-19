@@ -6,6 +6,8 @@
 
 package com.marqet.WebServer.api;
 
+import com.marqet.WebServer.util.DateTimeUtil;
+import com.marqet.WebServer.util.Path;
 import com.marqet.WebServer.util.UploadImageUtil;
 
 import javax.servlet.ServletException;
@@ -32,12 +34,11 @@ public class UploadImageAPI extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         // Create path components to save the file
-        final String path = "/Users/hpduy17/Desktop/";
-        final Part filePart = request.getPart("file");
+        final Part filePart = request.getPart("image");
         final String fileName = getFileName(filePart);
         final PrintWriter writer = response.getWriter();
         try {
-            new UploadImageUtil().upload(fileName,path,filePart);
+            new UploadImageUtil().upload(fileName+"_"+new DateTimeUtil().getNow(), Path.getOtherPath() ,filePart);
         } catch (Exception fne) {
             writer.println("You either did not specify a file to upload or are "
                     + "trying to upload a file to a protected or nonexistent "

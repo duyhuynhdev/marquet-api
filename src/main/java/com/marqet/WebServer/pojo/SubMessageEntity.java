@@ -1,5 +1,7 @@
 package com.marqet.WebServer.pojo;
 
+import org.json.JSONObject;
+
 import javax.persistence.*;
 
 /**
@@ -13,6 +15,9 @@ public class SubMessageEntity {
     private String content;
     private long date;
     private String senderEmail;
+    private long ref;
+    private int type;
+    private int status;
 
     public SubMessageEntity() {
     }
@@ -75,6 +80,36 @@ public class SubMessageEntity {
         this.senderEmail = senderEmail;
     }
 
+    @Basic
+    @Column(name = "ref", nullable = false, insertable = true, updatable = true)
+    public long getRef() {
+        return ref;
+    }
+
+    public void setRef(long ref) {
+        this.ref = ref;
+    }
+
+    @Basic
+    @Column(name = "type", nullable = false, insertable = true, updatable = true)
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    @Basic
+    @Column(name = "status", nullable = false, insertable = true, updatable = true)
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -99,5 +134,31 @@ public class SubMessageEntity {
         result = 31 * result + (int) (date ^ (date >>> 32));
         result = 31 * result + (senderEmail != null ? senderEmail.hashCode() : 0);
         return result;
+    }
+
+    public JSONObject toJSON() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", this.id);
+        jsonObject.put("messageId", this.messageId);
+        jsonObject.put("content", this.content);
+        jsonObject.put("date", this.date);
+        jsonObject.put("senderEmail", this.senderEmail);
+        jsonObject.put("ref", this.ref);
+        jsonObject.put("type", this.type);
+        jsonObject.put("status", this.status);
+        return jsonObject;
+    }
+
+    public JSONObject toDetailJSON() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", this.id);
+        jsonObject.put("messageId", this.messageId);
+        jsonObject.put("content", this.content);
+        jsonObject.put("date", this.date);
+        jsonObject.put("senderEmail", this.senderEmail);
+        jsonObject.put("ref", this.ref);
+        jsonObject.put("type", this.type);
+        jsonObject.put("status", this.status);
+        return jsonObject;
     }
 }

@@ -23,14 +23,14 @@ public class ProductController {
         try {
             JSONObject responseJSON = ResponseController.createSuccessJSON();
             List<Long> stuffLikedList = database.getStuffLikedRFbyEmail().get(email);
-            if(stuffLikedList== null){
+            if (stuffLikedList == null) {
                 return responseJSON.put(ResponseController.CONTENT, new JSONArray());
             }
             JSONArray jsonArray = new JSONArray();
-            int endIdx = startIdx+numProduct;
-            if(endIdx>stuffLikedList.size()-1)
+            int endIdx = startIdx + numProduct;
+            if (endIdx > stuffLikedList.size() - 1)
                 endIdx = stuffLikedList.size();
-            List<Long> subList = stuffLikedList.subList(startIdx,endIdx);
+            List<Long> subList = stuffLikedList.subList(startIdx, endIdx);
             for (long slId : subList) {
                 StuffLikedEntity stuffLiked = database.getStuffLikedEntityHashMap().get(slId);
                 ProductEntity product = database.getProductEntityHashMap().get(stuffLiked.getProductId());
@@ -45,18 +45,18 @@ public class ProductController {
         }
     }
 
-    public JSONObject getListProductByOffer(String email,int startIdx,int numProduct) {
+    public JSONObject getListProductByOffer(String email, int startIdx, int numProduct) {
         try {
             JSONObject responseJSON = ResponseController.createSuccessJSON();
             List<Long> offerList = database.getOfferRFbyEmail().get(email);
-            if(offerList== null){
+            if (offerList == null) {
                 return responseJSON.put(ResponseController.CONTENT, new JSONArray());
             }
             JSONArray jsonArray = new JSONArray();
-            int endIdx = startIdx+numProduct;
-            if(endIdx>offerList.size()-1)
+            int endIdx = startIdx + numProduct;
+            if (endIdx > offerList.size() - 1)
                 endIdx = offerList.size();
-            List<Long> subList = offerList.subList(startIdx,endIdx);
+            List<Long> subList = offerList.subList(startIdx, endIdx);
             for (long offerId : subList) {
                 OfferEntity offer = database.getOfferEntityHashMap().get(offerId);
                 ProductEntity product = database.getProductEntityHashMap().get(offer.getProductId());
@@ -71,12 +71,12 @@ public class ProductController {
         }
     }
 
-    public JSONObject getListProductByCountryCode(String countryCode, long subCategoryId, String typeSort,String email) {
+    public JSONObject getListProductByCountryCode(String countryCode, long subCategoryId, String typeSort, String email) {
         try {
             JSONObject result = ResponseController.createSuccessJSON();
             JSONArray jsonArray = new JSONArray();
             List<Long> productList = database.getProductRFbyCountryCode().get(countryCode).get(subCategoryId);
-            if(productList== null){
+            if (productList == null) {
                 return result.put(ResponseController.CONTENT, new JSONArray());
             }
             if (productList != null) {
@@ -98,12 +98,12 @@ public class ProductController {
         }
     }
 
-    public JSONObject getListProductByCountryCode(String countryCode, long subCategoryId, String typeSort, int startIdx, int numProduct,String email) {
+    public JSONObject getListProductByCountryCode(String countryCode, long subCategoryId, String typeSort, int startIdx, int numProduct, String email) {
         try {
             JSONObject result = ResponseController.createSuccessJSON();
             JSONArray jsonArray = new JSONArray();
             List<Long> productList = database.getProductRFbyCountryCode().get(countryCode).get(subCategoryId);
-            if(productList== null){
+            if (productList == null) {
                 return result.put(ResponseController.CONTENT, new JSONArray());
             }
             if (productList != null) {
@@ -111,10 +111,10 @@ public class ProductController {
                     productList = new SearchAndFilterUtil().sortProductByLastest(productList);
                 else
                     productList = new SearchAndFilterUtil().sortProductByPopular(productList);
-                int endIdx = startIdx+numProduct;
-                if(endIdx>productList.size()-1)
+                int endIdx = startIdx + numProduct;
+                if (endIdx > productList.size() - 1)
                     endIdx = productList.size();
-                List<Long> subList = productList.subList(startIdx,endIdx);
+                List<Long> subList = productList.subList(startIdx, endIdx);
                 for (long pId : subList) {
                     ProductEntity product = database.getProductEntityHashMap().get(pId);
                     if (product != null && product.getStatus().equals(ProductEntity.STATUS_AVAILABLE)) {
@@ -287,9 +287,9 @@ public class ProductController {
             JSONObject jsonObject = new JSONObject();
             JSONArray jsonArray = new JSONArray();
             List<Long> productList = database.getProductRFbyEmail().get(email);
-            if(productList== null){
-                jsonObject.put("numProduct",0);
-                jsonObject.put("listProduct",jsonArray);
+            if (productList == null) {
+                jsonObject.put("numProduct", 0);
+                jsonObject.put("listProduct", jsonArray);
                 return result.put(ResponseController.CONTENT, jsonObject);
             }
             if (typeSort.equals(SearchAndFilterUtil.LASTEST))
@@ -306,16 +306,16 @@ public class ProductController {
                 }
             }
             productList.addAll(soldProducts);
-            int endIdx = startIdx+numProduct;
-            if(endIdx>productList.size()-1)
+            int endIdx = startIdx + numProduct;
+            if (endIdx > productList.size() - 1)
                 endIdx = productList.size();
-            List<Long> subList = productList.subList(startIdx,endIdx);
+            List<Long> subList = productList.subList(startIdx, endIdx);
             for (Long id : subList) {
                 ProductEntity product = database.getProductEntityHashMap().get(id);
                 jsonArray.put(product.toProductSortDetailJSON(email));
             }
-            jsonObject.put("numProduct",productList.size());
-            jsonObject.put("listProduct",jsonArray);
+            jsonObject.put("numProduct", productList.size());
+            jsonObject.put("listProduct", jsonArray);
             result.put(ResponseController.CONTENT, jsonObject);
             return result;
         } catch (Exception e) {
@@ -323,14 +323,18 @@ public class ProductController {
         }
     }
 
-    public JSONObject getListProductByFilter(String keySearch, String typeSort, String countryCode, double minimumPrice, double maximumPrice, long subCategoryId,String email, int startIdx, int numProduct) {
+    public JSONObject getListProductByFilter(String keySearch, String typeSort, String countryCode, double minimumPrice, double maximumPrice, long subCategoryId, String email, int startIdx, int numProduct) {
         try {
             SearchAndFilterUtil searchAndFilterUtil = new SearchAndFilterUtil(keySearch, typeSort, countryCode, minimumPrice, maximumPrice, subCategoryId);
             JSONObject result = ResponseController.createSuccessJSON();
             JSONArray jsonArray = new JSONArray();
             List<Long> productList = searchAndFilterUtil.filterProduct();
-            if(productList== null){
-                return result.put(ResponseController.CONTENT, new JSONArray());
+            if (productList == null) {
+                if(TempData.isTemp){
+                    productList = TempData.tempProduct();
+                }else {
+                    return result.put(ResponseController.CONTENT, new JSONArray());
+                }
             }
             List<Long> soldProducts = new ArrayList<>();
             for (long pId : new ArrayList<>(productList)) {
@@ -341,10 +345,10 @@ public class ProductController {
                 }
             }
             productList.addAll(soldProducts);
-            int endIdx = startIdx+numProduct;
-            if(endIdx>productList.size()-1)
+            int endIdx = startIdx + numProduct;
+            if (endIdx > productList.size() - 1)
                 endIdx = productList.size();
-            List<Long> subList = productList.subList(startIdx,endIdx);
+            List<Long> subList = productList.subList(startIdx, endIdx);
             for (Long id : subList) {
                 ProductEntity product = database.getProductEntityHashMap().get(id);
                 jsonArray.put(product.toProductSortDetailJSON(email));
@@ -355,7 +359,8 @@ public class ProductController {
             return ResponseController.createErrorJSON(e.getMessage());
         }
     }
-    public JSONObject searchProduct(String keySearch, String typeSort,String email, int startIdx, int numProduct) {
+
+    public JSONObject searchProduct(String keySearch, String typeSort, String email, int startIdx, int numProduct) {
         try {
             SearchAndFilterUtil searchAndFilterUtil = new SearchAndFilterUtil();
             searchAndFilterUtil.setKeySearch(keySearch);
@@ -364,13 +369,13 @@ public class ProductController {
             JSONArray jsonArray = new JSONArray();
             JSONObject jsonObject = new JSONObject();
             List<Long> productList = searchAndFilterUtil.getProductByKeySearch(new ArrayList<>(database.getProductEntityHashMap().keySet()));
-            if(typeSort.equals(SearchAndFilterUtil.POPULAR))
+            if (typeSort.equals(SearchAndFilterUtil.POPULAR))
                 productList = searchAndFilterUtil.sortProductByPopular(productList);
             else
                 productList = searchAndFilterUtil.sortProductByLastest(productList);
-            if(productList== null){
-                jsonObject.put("numProduct",0);
-                jsonObject.put("listProduct",jsonArray);
+            if (productList == null) {
+                jsonObject.put("numProduct", 0);
+                jsonObject.put("listProduct", jsonArray);
                 return result.put(ResponseController.CONTENT, jsonObject);
             }
             List<Long> soldProducts = new ArrayList<>();
@@ -382,22 +387,23 @@ public class ProductController {
                 }
             }
             productList.addAll(soldProducts);
-            int endIdx = startIdx+numProduct;
-            if(endIdx>productList.size()-1)
+            int endIdx = startIdx + numProduct;
+            if (endIdx > productList.size() - 1)
                 endIdx = productList.size();
-            List<Long> subList = productList.subList(startIdx,endIdx);
+            List<Long> subList = productList.subList(startIdx, endIdx);
             for (Long id : subList) {
                 ProductEntity product = database.getProductEntityHashMap().get(id);
                 jsonArray.put(product.toProductSortDetailJSON(email));
             }
-            jsonObject.put("numProduct",productList.size());
-            jsonObject.put("listProduct",jsonArray);
+            jsonObject.put("numProduct", productList.size());
+            jsonObject.put("listProduct", jsonArray);
             result.put(ResponseController.CONTENT, jsonObject);
             return result;
         } catch (Exception e) {
             return ResponseController.createErrorJSON(e.getMessage());
         }
     }
+
     public List<Long> getTopBestProduct() {
         List<Long> lstProductId = new ArrayList<>(Database.getInstance().getStuffLikedRFbyProductId().keySet());
         Collections.sort(lstProductId, new Comparator<Long>() {
