@@ -8,7 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -75,9 +75,9 @@ public class CityDao {
             for (CityEntity obj : list) {
                 Database.getInstance().getCityEntityHashMap().put(obj.getCode(), obj);
                 //put into cityRFcountryCode
-                List<String> cityList = Database.getInstance().getCityRFbyCountryCode().get(obj.getCountryCode());
+                HashSet<String> cityList = Database.getInstance().getCityRFbyCountryCode().get(obj.getCountryCode());
                 if(cityList==null){
-                    cityList = new ArrayList<>();
+                    cityList = new HashSet<>();
                 }
                 cityList.add(obj.getCode());
                 Database.getInstance().getCityRFbyCountryCode().put(obj.getCountryCode(),cityList);

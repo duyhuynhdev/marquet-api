@@ -9,10 +9,7 @@ import com.marqet.WebServer.util.TempData;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by hpduy17 on 3/28/15.
@@ -24,8 +21,12 @@ public class FeedbackController {
     public JSONObject getListFeedbackAll(String email, int startIdx, int numFeedback) {
         try {
             JSONObject result = ResponseController.createSuccessJSON();
-            List<Long> listBuyerFeedback = database.getBuyerFeedbackRFEmail().get(email);
-            List<Long> listSellerFeedback = database.getSellerFeedbackRFEmail().get(email);
+            List<Long> listBuyerFeedback = new ArrayList<>();
+            List<Long> listSellerFeedback = new ArrayList<>();
+            try{
+                listBuyerFeedback = new ArrayList<>(database.getBuyerFeedbackRFEmail().get(email));
+                listSellerFeedback = new ArrayList<>(database.getSellerFeedbackRFEmail().get(email));
+            }catch (Exception ignored){}
             if (listBuyerFeedback == null)
                 listBuyerFeedback = new ArrayList<>();
             if (listSellerFeedback == null)
@@ -34,7 +35,7 @@ public class FeedbackController {
                 listSellerFeedback = TempData.tempFeedback(email, false);
             }
             listBuyerFeedback.addAll(listSellerFeedback);
-            JSONArray arrAll = getListFeedback(listBuyerFeedback,startIdx,numFeedback);
+            JSONArray arrAll = getListFeedback(email,listBuyerFeedback,startIdx,numFeedback);
             return result.put(ResponseController.CONTENT, arrAll);
         } catch (Exception ex) {
             return ResponseController.createErrorJSON(ex.getMessage());
@@ -43,13 +44,16 @@ public class FeedbackController {
     public JSONObject getListFeedbackSeller(String email, int startIdx, int numFeedback) {
         try {
             JSONObject result = ResponseController.createSuccessJSON();
-            List<Long> listSellerFeedback = database.getSellerFeedbackRFEmail().get(email);
+            List<Long> listSellerFeedback = new ArrayList<>();
+            try{
+                listSellerFeedback = new ArrayList<>(database.getSellerFeedbackRFEmail().get(email));
+            }catch (Exception ignored){}
             if (listSellerFeedback == null)
                 listSellerFeedback = new ArrayList<>();
             if(listSellerFeedback.isEmpty()&& TempData.isTemp){
                 listSellerFeedback = TempData.tempFeedback(email,false);
             }
-            JSONArray arrSeller = getListFeedback(listSellerFeedback, startIdx, numFeedback);
+            JSONArray arrSeller = getListFeedback(email, listSellerFeedback, startIdx, numFeedback);
             return result.put(ResponseController.CONTENT, arrSeller);
         } catch (Exception ex) {
             return ResponseController.createErrorJSON(ex.getMessage());
@@ -58,31 +62,22 @@ public class FeedbackController {
     public JSONObject getListFeedbackBuyer(String email, int startIdx, int numFeedback) {
         try {
             JSONObject result = ResponseController.createSuccessJSON();
-            List<Long> listBuyerFeedback = database.getBuyerFeedbackRFEmail().get(email);
+            List<Long> listBuyerFeedback = new ArrayList<>();
+            try{
+                listBuyerFeedback = new ArrayList<>(database.getBuyerFeedbackRFEmail().get(email));
+            }catch (Exception ignored){}
             if (listBuyerFeedback == null)
                 listBuyerFeedback = new ArrayList<>();
             if(listBuyerFeedback.isEmpty()&& TempData.isTemp){
                 listBuyerFeedback = TempData.tempFeedback(email,true);
             }
-            JSONArray arrBuyer = getListFeedback(listBuyerFeedback,startIdx,numFeedback);
+            JSONArray arrBuyer = getListFeedback(email, listBuyerFeedback, startIdx, numFeedback);
             return result.put(ResponseController.CONTENT, arrBuyer);
         } catch (Exception ex) {
             return ResponseController.createErrorJSON(ex.getMessage());
         }
     }
-    public JSONObject getListFeedbackRequired(String email, int startIdx, int numFeedback) {
-        try {
-            JSONObject result = ResponseController.createSuccessJSON();
-            List<Long> listRequired = database.getRequiredFeedback().get(email);
-            if (listRequired == null)
-                listRequired = new ArrayList<>();
-            JSONArray arrBuyer = getListFeedback(listRequired, startIdx, numFeedback);
-            return result.put(ResponseController.CONTENT, arrBuyer);
-        } catch (Exception ex) {
-            return ResponseController.createErrorJSON(ex.getMessage());
-        }
-    }
-    private JSONArray getListFeedback(List<Long> feedbackIds, int startIdx, int numFeed) {
+    private JSONArray getListFeedback(String email , List<Long> feedbackIds, int startIdx, int numFeed) {
         JSONArray array = new JSONArray();
         try{
             Collections.sort(feedbackIds, new Comparator<Long>() {
@@ -107,7 +102,7 @@ public class FeedbackController {
             for(long id : subList){
                 FeedbackEntity feed = database.getFeedbackEntityHashMap().get(id);
                 if(feed!=null){
-                    array.put(feed.toDetailJSON());
+                    array.put(feed.toDetailJSON(email));
                 }
             }
         }catch (Exception ex){
@@ -117,64 +112,9 @@ public class FeedbackController {
     }
     public JSONObject feedbackProduct(String buyerEmail, String sellerEmail, String content, int status, long productId) {
         try {
-            long feedbackId = IdGenerator.getFeedbackId();
-            FeedbackEntity feedback = new FeedbackEntity();
-            feedback.setId(feedbackId);
-            feedback.setBuyerEmail(buyerEmail);
-            feedback.setSellerEmail(sellerEmail);
-            feedback.setDate(new DateTimeUtil().getNow());
-            feedback.setProductId(productId);
-            feedback.setContent(content);
-            feedback.setStatus(status);
-            //put to database
-            database.getFeedbackEntityHashMap().put(feedbackId, feedback);
-            //put to buyerFeedbackRFEmail
-            List<Long> feedBuyerList = database.getBuyerFeedbackRFEmail().get(buyerEmail);
-            if (feedBuyerList == null)
-                feedBuyerList = new ArrayList<>();
-            feedBuyerList.add(feedbackId);
-            database.getBuyerFeedbackRFEmail().put(buyerEmail, feedBuyerList);
-            //put to sellerFeedbackRFEmail
-            List<Long> feedSellerList = database.getSellerFeedbackRFEmail().get(sellerEmail);
-            if (feedSellerList == null)
-                feedSellerList = new ArrayList<>();
-            feedSellerList.add(feedbackId);
-            database.getSellerFeedbackRFEmail().put(sellerEmail, feedSellerList);
-            if (dao.insert(feedback))
-                return ResponseController.createSuccessJSON().put(ResponseController.CONTENT, feedback.toDetailJSON());
-            else
-                return ResponseController.createFailJSON("Cannot insert in database\n");
-
-        } catch (Exception ex) {
-            return ResponseController.createErrorJSON(ex.getMessage());
-        }
-    }
-    public JSONObject feedbackProduct(long feedbackId, String content, int status) {
-        try {
-            FeedbackEntity feedback = database.getFeedbackEntityHashMap().get(feedbackId);
-            feedback.setDate(new DateTimeUtil().getNow());
-            feedback.setContent(content);
-            feedback.setStatus(status);
-            //put to database
-            database.getFeedbackEntityHashMap().put(feedbackId, feedback);
-            //remove from required feedback
-            List<Long> requireFeedbackList = database.getRequiredFeedback().get(feedback.getBuyerEmail());
-            if (requireFeedbackList != null) {
-                requireFeedbackList = new ArrayList<>();
-                requireFeedbackList.remove(feedback.getId());
-                database.getSellerFeedbackRFEmail().put(feedback.getBuyerEmail(), requireFeedbackList);
+            if(database.getFeedbackRFEmailAndProduct().containsKey(buyerEmail+"#"+productId)){
+                return ResponseController.createFailJSON("You have feedback this product already");
             }
-            if (dao.update(feedback))
-                return ResponseController.createSuccessJSON().put(ResponseController.CONTENT, feedback.toDetailJSON());
-            else
-                return ResponseController.createFailJSON("Cannot insert in database\n");
-
-        } catch (Exception ex) {
-            return ResponseController.createErrorJSON(ex.getMessage());
-        }
-    }
-    public JSONObject requiredFeedbackProduct(String buyerEmail, String sellerEmail, long productId) {
-        try {
             long feedbackId = IdGenerator.getFeedbackId();
             FeedbackEntity feedback = new FeedbackEntity();
             feedback.setId(feedbackId);
@@ -182,30 +122,63 @@ public class FeedbackController {
             feedback.setSellerEmail(sellerEmail);
             feedback.setDate(new DateTimeUtil().getNow());
             feedback.setProductId(productId);
-            feedback.setStatus(-1);
+            feedback.setContent(content);
+            feedback.setStatus(status);
             //put to database
             database.getFeedbackEntityHashMap().put(feedbackId, feedback);
             //put to buyerFeedbackRFEmail
-            List<Long> feedBuyerList = database.getBuyerFeedbackRFEmail().get(buyerEmail);
+            HashSet<Long> feedBuyerList = database.getBuyerFeedbackRFEmail().get(buyerEmail);
             if (feedBuyerList == null)
-                feedBuyerList = new ArrayList<>();
+                feedBuyerList = new HashSet<>();
             feedBuyerList.add(feedbackId);
             database.getBuyerFeedbackRFEmail().put(buyerEmail, feedBuyerList);
             //put to sellerFeedbackRFEmail
-            List<Long> feedSellerList = database.getSellerFeedbackRFEmail().get(sellerEmail);
+            HashSet<Long> feedSellerList = database.getSellerFeedbackRFEmail().get(sellerEmail);
             if (feedSellerList == null)
-                feedSellerList = new ArrayList<>();
+                feedSellerList = new HashSet<>();
             feedSellerList.add(feedbackId);
             database.getSellerFeedbackRFEmail().put(sellerEmail, feedSellerList);
-            //put to required feedback
-            List<Long> requireFeedbackList = database.getRequiredFeedback().get(feedback.getBuyerEmail());
-            if (requireFeedbackList == null)
-                requireFeedbackList = new ArrayList<>();
-            requireFeedbackList.add(feedback.getId());
-            database.getSellerFeedbackRFEmail().put(feedback.getBuyerEmail(), requireFeedbackList);
-            //TODO:Notify user
+            database.getFeedbackRFEmailAndProduct().put(buyerEmail+"#"+feedback.getProductId(),feedbackId);
             if (dao.insert(feedback))
-                return ResponseController.createSuccessJSON().put(ResponseController.CONTENT, feedback.toDetailJSON());
+                return ResponseController.createSuccessJSON().put(ResponseController.CONTENT, feedback.toDetailJSON(buyerEmail));
+            else
+                return ResponseController.createFailJSON("Cannot insert in database\n");
+
+        } catch (Exception ex) {
+            return ResponseController.createErrorJSON(ex.getMessage());
+        }
+    }
+    public synchronized JSONObject feedbackProduct(String buyerEmail, String sellerEmail, String content, int status, long productId, long messageId, long tempSubMessageId) {
+        try {
+            if(database.getFeedbackRFEmailAndProduct().containsKey(buyerEmail+"#"+productId)){
+                return ResponseController.createFailJSON("You have feedback this product already");
+            }
+            long feedbackId = IdGenerator.getFeedbackId();
+            FeedbackEntity feedback = new FeedbackEntity();
+            feedback.setId(feedbackId);
+            feedback.setBuyerEmail(buyerEmail);
+            feedback.setSellerEmail(sellerEmail);
+            feedback.setDate(new DateTimeUtil().getNow());
+            feedback.setProductId(productId);
+            feedback.setContent(content);
+            feedback.setStatus(status);
+            //put to database
+            database.getFeedbackEntityHashMap().put(feedbackId, feedback);
+            //put to buyerFeedbackRFEmail
+            HashSet<Long> feedBuyerList = database.getBuyerFeedbackRFEmail().get(buyerEmail);
+            if (feedBuyerList == null)
+                feedBuyerList = new HashSet<>();
+            feedBuyerList.add(feedbackId);
+            database.getBuyerFeedbackRFEmail().put(buyerEmail, feedBuyerList);
+            //put to sellerFeedbackRFEmail
+            HashSet<Long> feedSellerList = database.getSellerFeedbackRFEmail().get(sellerEmail);
+            if (feedSellerList == null)
+                feedSellerList = new HashSet<>();
+            feedSellerList.add(feedbackId);
+            database.getSellerFeedbackRFEmail().put(sellerEmail, feedSellerList);
+            database.getFeedbackRFEmailAndProduct().put(buyerEmail+"#"+feedback.getProductId(),feedbackId);
+            if (dao.insert(feedback))
+                return new SubMessageController().feedbackProduct(buyerEmail, messageId, tempSubMessageId, sellerEmail);
             else
                 return ResponseController.createFailJSON("Cannot insert in database\n");
 

@@ -1,6 +1,8 @@
 package com.marqet.WebServer.servlet;
 
 import com.marqet.WebServer.controller.ElementController;
+import com.marqet.WebServer.controller.ResponseController;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -15,27 +17,41 @@ import java.io.IOException;
  */
 @MultipartConfig
 public class UpdateAvatarServlet extends HttpServlet {
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)throws ServletException,IOException{
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-        try{
+        try {
             Part part = null;
             if (request.getContentType().startsWith("multipart/form-data")) {
-                part =request.getPart("defaultAvatar");
+                part = request.getPart("defaultAvatar");
             }
             ElementController controller = new ElementController();
-            controller.changeAvatar(part);
-            response.sendRedirect("element-information.marqet");
+            JSONObject responseJSON = controller.changeAvatar(part);
+            if (responseJSON.get(ResponseController.RESULT).equals(ResponseController.SUCCESS))
+                response.sendRedirect("element-information.marqet");
+            else{
+                request.setAttribute("isError", true);
+                request.setAttribute("errorTitle", "Change avatar fail");
+                request.setAttribute("errorMessage",responseJSON.get(ResponseController.CONTENT));
+                request.getRequestDispatcher("element-information.marqet").forward(request,response);
+            }
+
         }catch (Exception ex){
             ex.printStackTrace();
+            request.setAttribute("isError", true);
+            request.setAttribute("errorTitle", "Change avatar exception");
+            request.setAttribute("errorMessage",ex.getMessage());
+            request.getRequestDispatcher("element-information.marqet").forward(request, response);
         }
     }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        processRequest(request,response);
+        processRequest(request, response);
     }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        processRequest(request,response);
+        processRequest(request, response);
     }
 }

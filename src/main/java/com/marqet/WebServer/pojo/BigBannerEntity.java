@@ -1,6 +1,8 @@
 package com.marqet.WebServer.pojo;
 
+import com.marqet.WebServer.util.Database;
 import com.marqet.WebServer.util.Path;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.persistence.*;
@@ -10,7 +12,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "BigBanner", schema = "", catalog = "marqet")
-public class BigBannerEntity {
+public class BigBannerEntity implements Comparable {
     private long id;
     private String coverImg;
     private String status;
@@ -79,6 +81,7 @@ public class BigBannerEntity {
     public void setEmail(String email) {
         this.email = email;
     }
+
     @Basic
     @Column(name = "productId", nullable = false, insertable = true, updatable = true)
     public long getProductId() {
@@ -88,6 +91,7 @@ public class BigBannerEntity {
     public void setProductId(long productId) {
         this.productId = productId;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -115,28 +119,87 @@ public class BigBannerEntity {
         return result;
     }
 
-    public JSONObject toJSON(){
+    public JSONObject toJSON() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id",this.id);
+        jsonObject.put("id", this.id);
         jsonObject.put("coverImg", this.coverImg);
-        jsonObject.put("status",this.status);
-        jsonObject.put("setTime",this.setTime);
-        jsonObject.put("email",this.email);
-        jsonObject.put("productId",this.productId);
+        jsonObject.put("status", this.status);
+        jsonObject.put("setTime", this.setTime);
+        jsonObject.put("email", this.email);
+        jsonObject.put("productId", this.productId);
         return jsonObject;
     }
-    public JSONObject toDetailJSON(){
+
+    public JSONObject toDetailWithProductJSON(String email) {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("coverImg", Path.getServerAddress()+(this.coverImg.equals("") ? Path.getDefaultBigBannerImagePath(): this.coverImg));
-        jsonObject.put("productId",this.productId);
+        ProductEntity product = Database.getInstance().getProductEntityHashMap().get(this.productId);
+        String img = this.coverImg;
+        JSONArray jsonVideo = new JSONArray();
+        try {
+            jsonVideo = new JSONArray(product.getProductVideo());
+        } catch (Exception ex) {
+
+        }
+        if (jsonVideo.length() == 0) {
+            if (!product.getProductImages().equals("") && new JSONObject(product.getProductImages()).getJSONArray("full").length() > 0) {
+                try {
+                    img = new JSONObject(product.getProductImages()).getJSONArray("full").getString(0);
+                } catch (Exception ignored) {
+                }
+            }
+        } else {
+            try {
+                img = new JSONArray(product.getProductVideo()).getString(1);
+            } catch (Exception ignored) {
+            }
+        }
+        jsonObject.put("coverImg", Path.getServerAddress() + (img.equals("") ? Path.getDefaultBigBannerImagePath() : img));
+        ProductEntity productEntity = Database.getInstance().getProductEntityHashMap().get(this.productId);
+        jsonObject.put("product", productEntity == null ? "{}" : productEntity.toProductDetailJSON(email));
         return jsonObject;
     }
-    public static JSONObject toDefaultDetailJSON(){
+
+    public JSONObject toDetailJSON() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("coverImg", Path.getServerAddress()+Path.getDefaultBigBannerImagePath());
-        jsonObject.put("productId",0);
+        ProductEntity product = Database.getInstance().getProductEntityHashMap().get(this.productId);
+        String img = this.coverImg;
+        JSONArray jsonVideo = new JSONArray();
+        try {
+            jsonVideo = new JSONArray(product.getProductVideo());
+        } catch (Exception ex) {
+
+        }
+        if (jsonVideo.length() == 0) {
+            if (!product.getProductImages().equals("") && new JSONObject(product.getProductImages()).getJSONArray("full").length() > 0) {
+                try {
+                    img = new JSONObject(product.getProductImages()).getJSONArray("full").getString(0);
+                } catch (Exception ignored) {
+                }
+            }
+        } else {
+            try {
+                img = new JSONArray(product.getProductVideo()).getString(1);
+            } catch (Exception ignored) {
+            }
+        }
+        jsonObject.put("coverImg", Path.getServerAddress() + (img.equals("") ? Path.getDefaultBigBannerImagePath() : img));
+        jsonObject.put("productId", this.productId);
+        return jsonObject;
+    }
+
+    public static JSONObject toDefaultDetailJSON() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("coverImg", Path.getServerAddress() + Path.getDefaultBigBannerImagePath());
+        jsonObject.put("productId", 0);
         return jsonObject;
     }
 
 
+    @Override
+    public int compareTo(Object o) {
+        BigBannerEntity that = (BigBannerEntity) o;
+        if (this.getSetTime() > that.getSetTime())
+            return 0;
+        return -1;
+    }
 }

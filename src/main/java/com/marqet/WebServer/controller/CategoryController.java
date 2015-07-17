@@ -11,7 +11,7 @@ import org.json.JSONObject;
 
 import javax.servlet.http.Part;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
 /**
  * Created by hpduy17 on 3/20/15.
@@ -40,7 +40,7 @@ public class CategoryController {
             category.setId((int) id);
             String coverImagePath = "";
             if (imagePart != null && imagePart.getSize() > 0) {
-                coverImagePath = new UploadImageUtil().upload("category_" + id, Path.getUsersPath(), imagePart);
+                coverImagePath = new UploadImageUtil().upload("category_" + id, Path.getCategoriesPath(), imagePart);
             }
             category.setCoverImg(coverImagePath);
             category.setName(name);
@@ -78,7 +78,7 @@ public class CategoryController {
         try {
             CategoryEntity category = new CategoryEntity(Database.getInstance().getCategoryEntityHashMap().get(id));
             database.getCategoryEntityHashMap().remove(id);
-            List<Long> lstSubCategoryId = database.getSubCategoryRFbyCategoryId().get(id);
+            HashSet<Long> lstSubCategoryId = database.getSubCategoryRFbyCategoryId().get(id);
             if(lstSubCategoryId!=null) {
                 for (long subId : new ArrayList<>(lstSubCategoryId)) {
                     new SubCategoryController().deleteSubCategory(subId);

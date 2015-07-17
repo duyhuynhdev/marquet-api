@@ -8,7 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -79,26 +79,18 @@ public class FeedbackDao {
             for (FeedbackEntity obj : list) {
                 database.getFeedbackEntityHashMap().put(obj.getId(), obj);
                 //put to buyerFeedbackRFEmail
-                List<Long> feedBuyerList = database.getBuyerFeedbackRFEmail().get(obj.getBuyerEmail());
+                HashSet<Long> feedBuyerList = database.getBuyerFeedbackRFEmail().get(obj.getBuyerEmail());
                 if (feedBuyerList == null)
-                    feedBuyerList = new ArrayList<>();
+                    feedBuyerList = new HashSet<>();
                 feedBuyerList.add(obj.getId());
                 database.getBuyerFeedbackRFEmail().put(obj.getBuyerEmail(), feedBuyerList);
                 //put to sellerFeedbackRFEmail
-                List<Long> feedSellerList = database.getSellerFeedbackRFEmail().get(obj.getSellerEmail());
+                HashSet<Long> feedSellerList = database.getSellerFeedbackRFEmail().get(obj.getSellerEmail());
                 if (feedSellerList == null)
-                    feedSellerList = new ArrayList<>();
+                    feedSellerList = new HashSet<>();
                 feedSellerList.add(obj.getId());
                 database.getSellerFeedbackRFEmail().put(obj.getSellerEmail(), feedSellerList);
-                //put to required feedback
-                if (obj.getStatus() < 0) {
-                    List<Long> requireFeedbackList = database.getRequiredFeedback().get(obj.getBuyerEmail());
-                    if (requireFeedbackList == null)
-                        requireFeedbackList = new ArrayList<>();
-                    requireFeedbackList.add(obj.getId());
-                    database.getSellerFeedbackRFEmail().put(obj.getBuyerEmail(), requireFeedbackList);
-
-                }
+                database.getFeedbackRFEmailAndProduct().put(obj.getBuyerEmail()+"#"+obj.getProductId(),obj.getId());
             }
             session.close();
         } catch (HibernateException ex) {

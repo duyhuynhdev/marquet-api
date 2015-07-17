@@ -26,8 +26,19 @@ public class DeleteSubCategoryServlet extends HttpServlet {
             JSONObject responseJSON = controller.deleteSubCategory(id);
             if(responseJSON.get(ResponseController.RESULT).equals(ResponseController.SUCCESS))
                 response.sendRedirect("subcategory.marqet?categoryId="+categoryId);
+            else{
+                request.setAttribute("isError", true);
+                request.setAttribute("errorTitle", "Delete sub-category fail");
+                request.setAttribute("errorMessage",responseJSON.get(ResponseController.CONTENT));
+                request.getRequestDispatcher("subcategory.marqet?categoryId=" + categoryId).forward(request,response);
+            }
+
         }catch (Exception ex){
             ex.printStackTrace();
+            request.setAttribute("isError", true);
+            request.setAttribute("errorTitle", "Delete sub-category exception");
+            request.setAttribute("errorMessage",ex.getMessage());
+            request.getRequestDispatcher("subcategory.marqet?categoryId=" + request.getParameter("categoryId")).forward(request, response);
         }
     }
     @Override

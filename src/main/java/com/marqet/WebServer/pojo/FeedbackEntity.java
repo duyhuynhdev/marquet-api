@@ -1,5 +1,7 @@
 package com.marqet.WebServer.pojo;
 
+import com.marqet.WebServer.util.Database;
+import com.marqet.WebServer.util.Path;
 import org.json.JSONObject;
 
 import javax.persistence.*;
@@ -136,14 +138,26 @@ public class FeedbackEntity {
         jsonObject.put("content",this.content);
         return jsonObject;
     }
-    public JSONObject toDetailJSON(){
+    public JSONObject toDetailJSON(String email){
+        Database database = Database.getInstance();
+        UserEntity buyer = database.getUserEntityHashMap().get(this.buyerEmail);
+        UserEntity seller = database.getUserEntityHashMap().get(this.sellerEmail);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id",this.id);
-        jsonObject.put("buyerEmail",this.buyerEmail);
-        jsonObject.put("sellerEmail",this.sellerEmail);
         jsonObject.put("productId",this.productId);
         jsonObject.put("status",this.status);
         jsonObject.put("content",this.content);
+        if(!buyerEmail.equals(email)) {
+            jsonObject.put("email",buyer == null ? "Anonymous" : buyer.getEmail());
+            jsonObject.put("userName", buyer == null ? "Anonymous" : buyer.getUserName());
+            jsonObject.put("userAvatar", buyer == null ? Path.getServerAddress() + database.getElementEntity().getDefaultAvatar() : buyer.getProfilePicture());
+            jsonObject.put("isBuyer",true);
+        }else {
+            jsonObject.put("email",buyer == null ? "Anonymous" : buyer.getEmail());
+            jsonObject.put("userName", buyer == null ? "Anonymous" : buyer.getUserName());
+            jsonObject.put("userAvatar", seller == null ? Path.getServerAddress() + database.getElementEntity().getDefaultAvatar() : seller.getProfilePicture());
+            jsonObject.put("isBuyer",false);
+        }
         return jsonObject;
     }
 }

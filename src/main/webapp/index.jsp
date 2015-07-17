@@ -7,8 +7,7 @@ and open the template in the editor.
 <html>
 <head>
     <title>Marqet Server</title>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <link href="js/jquery-ui-1.10.4.custom/css/ui-lightness/jquery-ui-1.10.4.custom.css" rel="stylesheet"
           type="text/css"/>
     <script type="text/javascript" src="js/jquery-ui-1.10.4.custom/js/jquery-1.10.2.js"></script>
@@ -38,20 +37,19 @@ and open the template in the editor.
     <input value="GO" title="go" type="button" onclick="testAPI()" style="width: 100px">
 </div>
 <hr>
-<form method="GET" action="RegisterViaEmailAPI" enctype="multipart/form-data" >
+<form method="POST" action="RegisterViaEmailAPI" enctype="multipart/form-data" >
     File:
     <input type="file" name="profilePicture" id="profilePicture" /> <br/>
     Destination:
-    <input type="text" value="abc@yahoo.com" name="email"/>
-    <input type="text" value="username" name="username"/>
+    <input type="text" value="1111@yahoo.com" name="email"/>
+    <input type="text" value="Huỳnh Phương Duy " name="username"/>
     <input type="text" value="password" name="password"/>
     <input type="text" value="S" name="countryCode"/>
     <input type="text" value="S" name="cityCode"/>
-    <input type="text" value="telephone" name="telephone"/>
+    <input type="text" value="090909" name="telephone"/>
     </br>
     <input type="submit" value="Upload" name="upload" id="upload" />
 </form>
-
 </body>
 <script type="text/javascript">
     function testAPI() {

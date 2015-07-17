@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -20,7 +21,10 @@ public class StateController {
         try{
             JSONObject result = ResponseController.createSuccessJSON();
             JSONArray jsonArray = new JSONArray();
-            List<String> stateCodes = database.getStateRFbyCountryCode().get(countryCode);
+            List<String> stateCodes = new ArrayList<>();
+            try{
+                stateCodes = new ArrayList<>(database.getStateRFbyCountryCode().get(countryCode));
+            }catch (Exception ignored){}
             if(stateCodes!=null) {
                 for (String c : stateCodes) {
                     jsonArray.put(database.getStateEntityHashMap().get(c).toJSON());
@@ -42,9 +46,9 @@ public class StateController {
             if (database.getStateEntityHashMap().containsKey(state.getCode()))
                 return ResponseController.createFailJSON("State is exist\n");
             state.setCountryCode(countryCode);
-            List<String> listStateCode = database.getStateRFbyCountryCode().get(countryCode);
+            HashSet<String> listStateCode = database.getStateRFbyCountryCode().get(countryCode);
             if(listStateCode == null)
-                listStateCode = new ArrayList<>();
+                listStateCode = new HashSet<>();
             listStateCode.add(state.getCode());
             database.getStateRFbyCountryCode().put(countryCode, listStateCode);
             database.getStateEntityHashMap().put(state.getCode(), state);
@@ -66,9 +70,9 @@ public class StateController {
             database.getStateRFbyCountryCode().get(state.getCountryCode()).remove(stateCode);
             //add in new country
             state.setCountryCode(countryCode);
-            List<String> listStateCode = database.getStateRFbyCountryCode().get(countryCode);
+            HashSet<String> listStateCode = database.getStateRFbyCountryCode().get(countryCode);
             if(listStateCode == null)
-                listStateCode = new ArrayList<>();
+                listStateCode = new HashSet<>();
             listStateCode.add(stateCode);
             database.getStateRFbyCountryCode().put(countryCode,listStateCode);
             database.getStateEntityHashMap().put(state.getCode(), state);

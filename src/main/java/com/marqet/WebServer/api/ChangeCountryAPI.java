@@ -9,6 +9,8 @@ package com.marqet.WebServer.api;
 import com.marqet.WebServer.controller.ResponseController;
 import com.marqet.WebServer.controller.UserController;
 import com.marqet.WebServer.util.ApiParameterChecker;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -21,6 +23,7 @@ import java.io.PrintWriter;
 
 
 public class ChangeCountryAPI extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -43,20 +46,25 @@ public class ChangeCountryAPI extends HttpServlet {
                 jsonData.append(line);
             }
             JSONObject requestJSON = new JSONObject(jsonData.toString());
+            logger.info(LoggerFactory.REQUEST+requestJSON);
             // check enough parameter
-            String parameters = "email,newCountryCode";
+            String parameters = "email,newCountryCode,newCityCode";
             JSONObject resultCheckerJSON = ApiParameterChecker.check(requestJSON.keySet(), parameters);
             if (ResponseController.isSuccess(resultCheckerJSON)) {
                 //get parameter
                 String email = requestJSON.getString("email");
                 String newCountryCode = requestJSON.getString("newCountryCode");
+                String newCityCode = requestJSON.getString("newCityCode");
                 UserController controller = new UserController();
                 //change Country
-                out.print(controller.changeCountry(email,newCountryCode));
+                JSONObject result = controller.changeCountry(email, newCountryCode, newCityCode);
+                logger.info(LoggerFactory.RESPONSE + result);
+                out.print(result);
             } else {
                 out.print(resultCheckerJSON);
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
+            logger.error(ex.getStackTrace());
             out.print(ResponseController.createErrorJSON(ex.getMessage()));
         }
     }

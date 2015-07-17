@@ -45,7 +45,7 @@
                     for (int c = r * 4; c < (r + 1) * 4 && c < categoryEntityList.length(); c++) {
                         JSONObject category = categoryEntityList.getJSONObject(c);
                         out.println("<div class='col-lg-3 col-xs-6'>");
-                        out.println("<div class='small-box' style=\"background-image: url(" + category.getString("coverImg") + "'); background-repeat: no-repeat;\">");
+                        out.println("<div class='small-box' style=\"background-image: url('" + category.getString("coverImg") + "'); background-repeat: no-repeat; background-size: contain;\">");
                         out.println("<div class='inner'>");
                         out.println("<h3>" + category.getLong("id") + "</h3>");
                         out.println("<p>" + category.getString("name") + "</p>");

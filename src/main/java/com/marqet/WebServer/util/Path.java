@@ -1,4 +1,5 @@
 package com.marqet.WebServer.util;
+
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
@@ -10,16 +11,16 @@ import java.io.IOException;
 public class Path {
 
     @NotNull
-    private static final String dbPathRootWindows      = "C:\\MarqetData";
+    private static final String dbPathRootWindows = "C:\\MarqetData";
     @NotNull
-    private static final String dbPathRootUNIX         = "/marqet/production";
-    private static String dataPath, usersPath, productPath, imagePath, categoriesPath, subCategoriesPath ,thumbnailPath,otherPath;
+    private static final String dbPathRootUNIX = "/marqet/production";
+    private static String dataPath, usersPath, productPath, imagePath, categoriesPath, subCategoriesPath, thumbnailPath, otherPath, logPath;
     private static String serverAddress = "";
-    private static String defaultBigBannerImagePath ="";
-    private static String defaultSmallBannerImagePath ="";
-    private static String defaultCategoryImagePath ="";
-    public static String getRoot()
-    {
+    private static String defaultBigBannerImagePath = "";
+    private static String defaultSmallBannerImagePath = "";
+    private static String defaultCategoryImagePath = "";
+
+    public static String getRoot() {
         if (File.separator.equals("\\"))
             return dbPathRootWindows;
         else
@@ -31,15 +32,17 @@ public class Path {
         if (File.separator.equals("\\"))
             root = dbPathRootWindows;
         else
-            root =  dbPathRootUNIX ;
+            root = dbPathRootUNIX;
         dataPath = root + File.separator + "data";
-        imagePath =root + File.separator + "images";
+        imagePath = root + File.separator + "images";
         usersPath = imagePath + File.separator + "users";
         productPath = imagePath + File.separator + "products";
         thumbnailPath = imagePath + File.separator + "thumbnail";
         categoriesPath = imagePath + File.separator + "categories";
         subCategoriesPath = imagePath + File.separator + "subCategories";
         otherPath = imagePath + File.separator + "other";
+        logPath = dataPath + File.separator + "log";
+
         File fileData = new File(dataPath);
         File fileUsers = new File(usersPath);
         File fileProducts = new File(productPath);
@@ -48,33 +51,37 @@ public class Path {
         File fileCategories = new File(categoriesPath);
         File fileSubCategories = new File(subCategoriesPath);
         File fileOther = new File(otherPath);
-        if(!fileData.exists()){
+        File fileLog = new File(logPath);
+        if (!fileData.exists()) {
             fileData.mkdirs();
         }
-        if (!fileUsers.exists()){
+        if (!fileUsers.exists()) {
             fileUsers.mkdirs();
         }
-        if(!fileImages.exists()){
+        if (!fileImages.exists()) {
             fileImages.mkdirs();
         }
-        if(!fileThumbnail.exists()){
+        if (!fileThumbnail.exists()) {
             fileThumbnail.mkdirs();
         }
-        if(!fileProducts.exists()){
+        if (!fileProducts.exists()) {
             fileProducts.mkdirs();
         }
-        if(!fileCategories.exists()){
+        if (!fileCategories.exists()) {
             fileCategories.mkdirs();
         }
-        if(!fileSubCategories.exists()){
+        if (!fileSubCategories.exists()) {
             fileSubCategories.mkdirs();
         }
-        if(!fileOther.exists()){
+        if (!fileOther.exists()) {
             fileOther.mkdirs();
         }
-        defaultBigBannerImagePath = otherPath+File.separator+"default-bigbanner.png";
-        defaultSmallBannerImagePath = otherPath+File.separator+"default-smallbanner.png";
-        defaultCategoryImagePath = otherPath+File.separator+"default-category.png";
+        if (!fileLog.exists()) {
+            fileLog.mkdirs();
+        }
+        defaultBigBannerImagePath = otherPath + File.separator + "default-bigbanner.png";
+        defaultSmallBannerImagePath = otherPath + File.separator + "default-smallbanner.png";
+        defaultCategoryImagePath = otherPath + File.separator + "default-category.png";
 
 
     }
@@ -143,6 +150,10 @@ public class Path {
 
     public static String getDefaultCategoryImagePath() {
         return defaultCategoryImagePath;
+    }
+
+    public static String getLogPath() {
+        return logPath;
     }
 }
 

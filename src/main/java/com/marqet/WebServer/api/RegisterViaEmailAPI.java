@@ -11,6 +11,8 @@ import com.marqet.WebServer.controller.UserController;
 import com.marqet.WebServer.util.ApiParameterChecker;
 import com.marqet.WebServer.util.Database;
 import com.marqet.WebServer.util.DateTimeUtil;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -26,6 +28,7 @@ import java.util.HashMap;
 
 @MultipartConfig
 public class RegisterViaEmailAPI extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -41,6 +44,7 @@ public class RegisterViaEmailAPI extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
         try {
+            logger.info(LoggerFactory.REQUEST+request.getQueryString());
             // check enough parameter
             String parameters = "username,password,email,telephone,countryCode,cityCode";
             JSONObject resultCheckerJSON = ApiParameterChecker.check(request.getParameterMap().keySet(), parameters);
@@ -49,26 +53,33 @@ public class RegisterViaEmailAPI extends HttpServlet {
                 if(request.getContentType()!=null && request.getContentType().startsWith("multipart/form-data"))
                  imagePart = request.getPart("profilePicture");
                 //unicode utf8
-                String [] src =  URLDecoder.decode(request.getQueryString(), "UTF-8").split("&");
-                HashMap<String,String> req = Database.getInstance().convertArrStringToHashMap(src,"=");
+                String[] src;
+                HashMap<String,String> req = null;
+                try {
+                    src = URLDecoder.decode(request.getQueryString().replace("&", "#DUY#"), "UTF-8").split("#DUY#");
+                    req = Database.getInstance().convertArrStringToHashMap(src,"=");
+                }catch (Exception ignored){
+
+                }
                 //get parameter
-                String username = req.get("username");
-                username = "Phạm Văn Bôn";
-                String password = request.getParameter("password");
-                String email = request.getParameter("email");
+                String username = req==null?request.getParameter("username"):req.get("username");
+                String password = req==null?request.getParameter("password"):req.get("password");
+                String email = req==null?request.getParameter("email"):req.get("email");
                 long joinDate = new DateTimeUtil().getNow();
                 String telephone = request.getParameter("telephone");
                 String countryCode = request.getParameter("countryCode");
                 String cityCode = request.getParameter("cityCode");
                 UserController controller = new UserController();
                 //register
-                out.print(controller.register(username,password,email,telephone,
+                JSONObject result = (controller.register(username,password,email,telephone,
                         imagePart,countryCode,cityCode,joinDate));
+                logger.info(LoggerFactory.RESPONSE + result);
+                out.print(result);
             } else {
                 out.print(resultCheckerJSON);
             }
-        }catch (Exception ex){
-            ex.printStackTrace();
+        } catch (Exception ex){
+            logger.error(ex.getStackTrace());
             out.print(ResponseController.createErrorJSON(ex.getMessage()));
         }
     }

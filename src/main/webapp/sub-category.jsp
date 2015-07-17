@@ -46,7 +46,7 @@
                     for (int c = r * 4; c < (r + 1) * 4 && c < subCategoryEntityList.length(); c++) {
                         JSONObject subCategory = subCategoryEntityList.getJSONObject(c);
                         out.println("<div class='col-lg-3 col-xs-6'>");
-                        out.println("<div class='small-box' style=\"background-image: url('"+subCategory.getString("coverImg")+"'); background-repeat: no-repeat;\">");
+                        out.println("<div class='small-box' style=\"background-image: url('"+subCategory.getString("coverImg")+"'); background-repeat: no-repeat; background-size: contain;\">");
                         out.println("<div class='inner'>");
                         out.println("<h3>"+subCategory.getLong("id")+"</h3>");
                         out.println("<p>"+subCategory.getString("name")+"</p>");

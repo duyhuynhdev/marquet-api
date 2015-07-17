@@ -1,6 +1,8 @@
 package com.marqet.WebServer.servlet;
 
 import com.marqet.WebServer.controller.InformationController;
+import com.marqet.WebServer.controller.ResponseController;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,14 +19,26 @@ public class UpdateInformationServlet extends HttpServlet {
         response.setCharacterEncoding("UTF-8");
         try{
             String about = request.getParameter("about");
-            String communityRule = request.getParameter("communityRule");
-            String pointSystem = request.getParameter("pointSystem");
+            String communityGuidelines = request.getParameter("communityGuidelines");
+            String helpFAQ = request.getParameter("helpFAQ");
             String emailSupport = request.getParameter("emailSupport");
             InformationController controller = new InformationController();
-            controller.updateInformation(about,communityRule,emailSupport,pointSystem);
-            response.sendRedirect("element-information.marqet");
+            JSONObject responseJSON = controller.updateInformation(about, communityGuidelines, emailSupport, helpFAQ);
+            if (responseJSON.get(ResponseController.RESULT).equals(ResponseController.SUCCESS))
+                response.sendRedirect("element-information.marqet");
+            else{
+                request.setAttribute("isError", true);
+                request.setAttribute("errorTitle", "Change information detail fail");
+                request.setAttribute("errorMessage",responseJSON.get(ResponseController.CONTENT));
+                request.getRequestDispatcher("element-information.marqet").forward(request,response);
+            }
+
         }catch (Exception ex){
             ex.printStackTrace();
+            request.setAttribute("isError", true);
+            request.setAttribute("errorTitle", "Change information detail exception");
+            request.setAttribute("errorMessage",ex.getMessage());
+            request.getRequestDispatcher("element-information.marqet").forward(request, response);
         }
     }
     @Override

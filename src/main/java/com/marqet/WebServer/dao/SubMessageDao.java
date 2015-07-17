@@ -8,7 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -76,9 +76,9 @@ public class SubMessageDao {
             for (SubMessageEntity obj : list) {
                 database.getSubMessageEntityHashMap().put(obj.getId(), obj);
                 //put to subMessRFMessage
-                List<Long> subMessList = database.getSubMessagesRFMessageId().get(obj.getMessageId());
+                HashSet<Long> subMessList = database.getSubMessagesRFMessageId().get(obj.getMessageId());
                 if(subMessList==null)
-                    subMessList = new ArrayList<>();
+                    subMessList = new HashSet<>();
                 subMessList.add(obj.getId());
                 database.getSubMessagesRFMessageId().put(obj.getMessageId(),subMessList);
             }

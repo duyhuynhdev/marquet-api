@@ -56,11 +56,12 @@ public class ElementController {
         }
     }
 
-    public JSONObject changeBigBannerInfo(long newPoint, long newDuration) {
+    public JSONObject changeBigBannerInfo(long newPoint, long newDuration, int num) {
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put(ElementDao.POINT, newPoint);
             jsonObject.put(ElementDao.DURATION, newDuration);
+            jsonObject.put(ElementDao.NUM, num);
             database.getElementEntity().setBigBannerInfo(jsonObject.toString());
             if (dao.update(database.getElementEntity())) {
                 return ResponseController.createSuccessJSON();
@@ -71,11 +72,12 @@ public class ElementController {
         }
     }
 
-    public JSONObject changeSmallBannerInfo(long newPoint, long newDuration) {
+    public JSONObject changeSmallBannerInfo(long newPoint, long newDuration, int num) {
         try {
             JSONObject jsonObject = new JSONObject();
             jsonObject.put(ElementDao.POINT, newPoint);
             jsonObject.put(ElementDao.DURATION, newDuration);
+            jsonObject.put(ElementDao.NUM, num);
             database.getElementEntity().setSmallBannerInfo(jsonObject.toString());
             if (dao.update(database.getElementEntity())) {
                 return ResponseController.createSuccessJSON();

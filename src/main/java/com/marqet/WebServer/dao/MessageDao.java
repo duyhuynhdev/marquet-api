@@ -8,7 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -79,17 +79,20 @@ public class MessageDao {
             for (MessageEntity obj : list) {
                 database.getMessageEntityHashMap().put(obj.getId(), obj);
                 //put to buyerMessRFEmail
-                List<Long> messBuyerList = database.getBuyerMessRFEmail().get(obj.getSenderEmail());
+                HashSet<Long> messBuyerList = database.getBuyerMessRFEmail().get(obj.getSenderEmail());
                 if (messBuyerList == null)
-                    messBuyerList = new ArrayList<>();
+                    messBuyerList = new HashSet<>();
                 messBuyerList.add(obj.getId());
                 database.getBuyerMessRFEmail().put(obj.getSenderEmail(), messBuyerList);
                 //put to sellerMessRFEmail
-                List<Long> messSellerList = database.getSellerMessRFEmail().get(obj.getReceiverEmail());
+                HashSet<Long> messSellerList = database.getSellerMessRFEmail().get(obj.getReceiverEmail());
                 if (messSellerList == null)
-                    messSellerList = new ArrayList<>();
+                    messSellerList = new HashSet<>();
                 messSellerList.add(obj.getId());
                 database.getSellerMessRFEmail().put(obj.getReceiverEmail(), messSellerList);
+                //distinct message
+                database.getDistinctMessage().put(obj.getSenderEmail()+"#"+obj.getReceiverEmail()+"#"+obj.getProductId(),obj.getId());
+
             }
             session.close();
         } catch (HibernateException ex) {

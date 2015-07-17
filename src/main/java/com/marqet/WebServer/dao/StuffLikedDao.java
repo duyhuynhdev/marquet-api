@@ -8,7 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -76,15 +76,15 @@ public class StuffLikedDao {
             for (StuffLikedEntity obj : list) {
                 database.getStuffLikedEntityHashMap().put(obj.getId(), obj);
                 // put to product RF
-                List<Long> stuffLikedList = Database.getInstance().getStuffLikedRFbyProductId().get(obj.getProductId());
+                HashSet<Long> stuffLikedList = Database.getInstance().getStuffLikedRFbyProductId().get(obj.getProductId());
                 if(stuffLikedList==null)
-                    stuffLikedList = new ArrayList<>();
+                    stuffLikedList = new HashSet<>();
                 stuffLikedList.add(obj.getId());
                 database.getStuffLikedRFbyProductId().put(obj.getProductId(),stuffLikedList);
                 // put to email RF
-                List<Long> stuffLikedList2 = Database.getInstance().getStuffLikedRFbyEmail().get(obj.getBuyerEmail());
+                HashSet<Long> stuffLikedList2 = Database.getInstance().getStuffLikedRFbyEmail().get(obj.getBuyerEmail());
                 if(stuffLikedList2==null)
-                    stuffLikedList2 = new ArrayList<>();
+                    stuffLikedList2 = new HashSet<>();
                 stuffLikedList2.add(obj.getId());
                 database.getStuffLikedRFbyEmail().put(obj.getBuyerEmail(),stuffLikedList2);
                 database.getStuffLikedRFbyEmailAndProductId().put(obj.getBuyerEmail()+"#"+obj.getProductId(),obj.getId());

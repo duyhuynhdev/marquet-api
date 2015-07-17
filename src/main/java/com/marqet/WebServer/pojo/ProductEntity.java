@@ -1,5 +1,6 @@
 package com.marqet.WebServer.pojo;
 
+import com.marqet.WebServer.controller.UserController;
 import com.marqet.WebServer.util.Database;
 import com.marqet.WebServer.util.Path;
 import org.json.JSONArray;
@@ -26,9 +27,7 @@ public class ProductEntity {
     public static final String STATUS_AVAILABLE = "available";
     public static final String STATUS_OFFER = "offer";
     public static final String STATUS_SOLD = "sold";
-
-    public ProductEntity() {
-    }
+    private String productVideo;
 
     public ProductEntity(ProductEntity p) {
         this.id = p.id;
@@ -41,6 +40,7 @@ public class ProductEntity {
         this.email = p.email;
         this.cityCode = p.cityCode;
         this.subCategoryId = p.subCategoryId;
+        this.productVideo = p.productVideo;
     }
 
     @Id
@@ -111,6 +111,19 @@ public class ProductEntity {
 
     public void setProductImages(String productImages) {
         this.productImages = productImages;
+    }
+
+    @Basic
+    @Column(name = "productVideo", nullable = false, insertable = true, updatable = true, length = 65535)
+    public String getProductVideo() {
+        return productVideo;
+    }
+
+    public void setProductVideo(String productVideo) {
+        this.productVideo = productVideo;
+    }
+
+    public ProductEntity() {
     }
 
     @Basic
@@ -205,7 +218,7 @@ public class ProductEntity {
         int numStuffLiked = 0;
         if (database.getStuffLikedRFbyProductId().get(this.id) != null)
             numStuffLiked = database.getStuffLikedRFbyProductId().get(this.id).size();
-        boolean isLiked = database.getStuffLikedRFbyEmailAndProductId().containsKey(email+"#"+this.id);
+        boolean isLiked = database.getStuffLikedRFbyEmailAndProductId().containsKey(email + "#" + this.id);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", this.id);
         jsonObject.put("name", this.name);
@@ -218,11 +231,27 @@ public class ProductEntity {
             status = 2;
         jsonObject.put("status", status);
         String productImage = "";
+        JSONArray jsonVideo = new JSONArray();
         try {
-            JSONObject productImages = new JSONObject(this.productImages);
-            productImage = productImages.getJSONArray("thumbnail").getString(0);
+            jsonVideo = new JSONArray(this.productVideo);
+        } catch (Exception ex) {
 
-        } catch (Exception ignored) {
+        }
+        if (jsonVideo.length() == 0) {
+            if (!this.getProductImages().equals("") && new JSONObject(this.getProductImages()).getJSONArray("thumbnail").length() > 0) {
+                try {
+                    productImage = new JSONObject(this.getProductImages()).getJSONArray("thumbnail").getString(0);
+                } catch (Exception ignored) {
+                }
+            }
+        } else {
+            try {
+                productImage = new JSONArray(this.getProductVideo()).getString(1);
+            } catch (Exception ignored) {
+            }
+        }
+        if (owner == null) {
+            owner = new UserEntity(new UserController().getAnonymous());
         }
         jsonObject.put("productImage", Path.getServerAddress() + (productImage.equals("") ? Path.getDefaultSmallBannerImagePath() : productImage));
         jsonObject.put("userName", owner.getUserName());
@@ -232,7 +261,44 @@ public class ProductEntity {
         return jsonObject;
     }
 
-    public JSONObject toProductDetailJSON() {
+    public JSONObject toProductSortDetailJSON() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", this.id);
+        jsonObject.put("name", this.name);
+        jsonObject.put("date", this.date);
+        jsonObject.put("price", this.price);
+        int status = 0;
+        if (this.status.equals(ProductEntity.STATUS_SOLD))
+            status = 1;
+        if (this.status.equals(ProductEntity.STATUS_OFFER))
+            status = 2;
+        jsonObject.put("status", status);
+        String productImage = "";
+        JSONArray jsonVideo = new JSONArray();
+        try {
+            jsonVideo = new JSONArray(this.productVideo);
+        } catch (Exception ex) {
+
+        }
+        if (jsonVideo.length() == 0) {
+            if (!this.getProductImages().equals("") && new JSONObject(this.getProductImages()).getJSONArray("thumbnail").length() > 0) {
+                try {
+                    productImage = new JSONObject(this.getProductImages()).getJSONArray("thumbnail").getString(0);
+                } catch (Exception ignored) {
+                }
+            }
+        } else {
+            try {
+                productImage = new JSONArray(this.getProductVideo()).getString(1);
+            } catch (Exception ignored) {
+            }
+        }
+        jsonObject.put("productImage", Path.getServerAddress() + (productImage.equals("") ? Path.getDefaultSmallBannerImagePath() : productImage));
+        return jsonObject;
+    }
+
+    public JSONObject toProductDetailJSON(String email) {
+        boolean isLiked = false;
         Database database = Database.getInstance();
         //get user detail
         UserEntity owner = database.getUserEntityHashMap().get(this.email);
@@ -243,8 +309,10 @@ public class ProductEntity {
         CategoryEntity category = database.getCategoryEntityHashMap().get(subCategory.getCategoryId());
         //get num liked
         int numStuffLiked = 0;
-        if (database.getStuffLikedRFbyProductId().get(this.id) != null)
+        if (database.getStuffLikedRFbyProductId().get(this.id) != null) {
             numStuffLiked = database.getStuffLikedRFbyProductId().get(this.id).size();
+            isLiked = database.getStuffLikedRFbyEmailAndProductId().containsKey(email + "#" + this.id);
+        }
         //result
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", this.id);
@@ -259,24 +327,35 @@ public class ProductEntity {
         jsonObject.put("status", status);
         jsonObject.put("description", this.description);
         JSONArray productImage = new JSONArray();
+        JSONArray productVideo = new JSONArray();
         try {
             JSONObject productImages = new JSONObject(this.productImages);
             for (int i = 0; i < productImages.getJSONArray("full").length(); i++) {
                 productImage.put(Path.getServerAddress() + productImages.getJSONArray("full").get(i));
             }
+            JSONArray productVideos = new JSONArray(this.productVideo);
+            for (int i = 0; i < productVideos.length(); i++) {
+                productVideo.put(Path.getServerAddress() + productVideos.get(i));
+            }
         } catch (Exception ignored) {
         }
+        if (owner == null) {
+            owner = new UserEntity(new UserController().getAnonymous());
+        }
         JSONArray defaultImg = new JSONArray();
-        for (int i = 0; i < 5; i++)
-            defaultImg.put(Path.getServerAddress() + Path.getDefaultBigBannerImagePath());
-        jsonObject.put("productImage", (productImage.length() == 0 ? defaultImg : productImage));
+        defaultImg.put(Path.getServerAddress() + Path.getDefaultBigBannerImagePath());
+        jsonObject.put("productImage", (productImage.length() == 0 && productVideo.length() == 0 ? defaultImg : productImage));
+        jsonObject.put("productVideo", productVideo);
         jsonObject.put("userName", owner.getUserName());
         String image = owner.getProfilePicture();
         jsonObject.put("profilePicture", (image.equals("") ? Database.getInstance().getElementEntity().getDefaultAvatar() : image));
         jsonObject.put("email", this.email);
         jsonObject.put("city", city.getName());
+        jsonObject.put("cityCode", this.getCityCode());
         jsonObject.put("category", category.getName());
+        jsonObject.put("subCategoryId", this.getSubCategoryId());
         jsonObject.put("numStuffLiked", numStuffLiked);
+        jsonObject.put("isLiked", isLiked);
         return jsonObject;
     }
 }

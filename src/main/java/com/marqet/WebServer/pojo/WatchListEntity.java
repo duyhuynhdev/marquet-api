@@ -1,5 +1,7 @@
 package com.marqet.WebServer.pojo;
 
+import org.json.JSONObject;
+
 import javax.persistence.*;
 
 /**
@@ -71,5 +73,19 @@ public class WatchListEntity {
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (pattern != null ? pattern.hashCode() : 0);
         return result;
+    }
+    public JSONObject toJSON() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", this.id);
+        jsonObject.put("email", this.email);
+        jsonObject.put("pattern", this.pattern);
+        return jsonObject;
+    }
+    public JSONObject toDetailJSON() {
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id", this.id);
+        jsonObject.put("email", this.email);
+        jsonObject.put("pattern", this.pattern);
+        return jsonObject;
     }
 }

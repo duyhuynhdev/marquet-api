@@ -16,8 +16,6 @@
         <property name="hibernate.connection.characterEncoding">utf8</property>
         <property name="hibernate.connection.useUnicode">true</property>
         <property name="hbm2ddl.auto">update</property>
-        <mapping resource="data/ActivityEntity.hbm.xml"/>
-        <!--<mapping class="com.marqet.WebServer.pojo.ActivityEntity"/>-->
         <mapping resource="data/BigBannerEntity.hbm.xml"/>
         <!--<mapping class="com.marqet.WebServer.pojo.BigBannerEntity"/>-->
         <mapping resource="data/CategoryEntity.hbm.xml"/>
@@ -57,6 +55,8 @@
         <mapping resource="data/StateEntity.hbm.xml"/>
         <!--<mapping class="com.marqet.WebServer.pojo.StateEntity"/>-->
         <mapping resource="data/AccountEntity.hbm.xml"/>
+        <!--<mapping class="com.marqet.WebServer.pojo.ActivityEntity"/>-->
+        <mapping resource="data/ActivityEntity.hbm.xml"/>
         <!--<mapping class="com.marqet.WebServer.pojo.AccountEntity"/>-->
         <!-- JDBC connection pool (use the built-in) -->
 

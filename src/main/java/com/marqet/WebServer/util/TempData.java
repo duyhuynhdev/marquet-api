@@ -2,6 +2,7 @@ package com.marqet.WebServer.util;
 
 import com.marqet.WebServer.pojo.FeedbackEntity;
 import com.marqet.WebServer.pojo.MessageEntity;
+import com.marqet.WebServer.pojo.UserEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,11 +12,25 @@ import java.util.List;
  */
 public class TempData {
 
-    public static boolean isTemp = true;
+    public static boolean isTemp = false;
     public static List<String> tempFollow(String email){
         List<String> result = new ArrayList<>(Database.getInstance().getUserEntityHashMap().keySet());
         result.remove(email);
         return result ;
+    }
+    public static void createTemper(){
+        UserEntity temper = new UserEntity();
+        temper.setEmail("MarQetTemper");
+        temper.setPassword("MarQetTemper");
+        temper.setUserName("MarQetTemper");
+        temper.setJoinDate(new DateTimeUtil().getNow());
+        temper.setCityCode("S");
+        temper.setCountryCode("S");
+        temper.setStateCode("S");
+        temper.setProfilePicture(Database.getInstance().getElementEntity().getDefaultAvatar());
+        temper.setPoint(100000);
+        temper.setTelephone("12345");
+        Database.getInstance().getUserEntityHashMap().put("MarQetTemper",temper);
     }
     public static List<Long> tempFeedback(String email,boolean isBuyer){
         List<Long> result = new ArrayList<>();

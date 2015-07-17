@@ -16,6 +16,7 @@ import java.util.List;
 public class ElementDao {
     public static final String POINT = "point";
     public static final String DURATION = "duration";
+    public static final String NUM = "num";
     public static final String LEVEL1 = "level1";
     public static final String LEVEL2 = "level2";
     public static final String LEVEL3 = "level3";

@@ -1,5 +1,7 @@
 package com.marqet.WebServer.pojo;
 
+import com.marqet.WebServer.util.Database;
+import com.marqet.WebServer.util.Path;
 import org.json.JSONObject;
 
 import javax.persistence.*;
@@ -54,6 +56,7 @@ public class MessageEntity {
     public void setProductId(long productId) {
         this.productId = productId;
     }
+
     @Basic
     @Column(name = "offerId", nullable = false, insertable = true, updatable = true)
     public long getOfferId() {
@@ -63,6 +66,7 @@ public class MessageEntity {
     public void setOfferId(long offerId) {
         this.offerId = offerId;
     }
+
     @Basic
     @Column(name = "content", nullable = false, insertable = true, updatable = true, length = 65535)
     public String getContent() {
@@ -137,7 +141,8 @@ public class MessageEntity {
         if (receiverEmail != null ? !receiverEmail.equals(that.receiverEmail) : that.receiverEmail != null)
             return false;
         if (senderEmail != null ? !senderEmail.equals(that.senderEmail) : that.senderEmail != null) return false;
-        if (status != that.status) return false;;
+        if (status != that.status) return false;
+        ;
         if (productId != that.productId) return false;
         if (offerId != that.offerId) return false;
         return true;
@@ -157,31 +162,45 @@ public class MessageEntity {
         return result;
     }
 
-    public JSONObject toJSON(){
+    public JSONObject toJSON() {
+
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id",this.id);
-        jsonObject.put("productId",this.productId);
-        jsonObject.put("content",this.content);
-        jsonObject.put("date",this.date);
-        jsonObject.put("offerId",this.offerId);
-        jsonObject.put("isArchive",this.isArchive);
-        jsonObject.put("status",this.status);
-        jsonObject.put("senderEmail",this.senderEmail);
-        jsonObject.put("receiverEmail",this.receiverEmail);
+        jsonObject.put("id", this.id);
+        jsonObject.put("productId", this.productId);
+        jsonObject.put("content", this.content);
+        jsonObject.put("date", this.date);
+        jsonObject.put("offerId", this.offerId);
+        jsonObject.put("isArchive", this.isArchive);
+        jsonObject.put("status", this.status);
+        jsonObject.put("senderEmail", this.senderEmail);
+        jsonObject.put("receiverEmail", this.receiverEmail);
         return jsonObject;
     }
-    public JSONObject toDetailJSON(){
+
+    public JSONObject toDetailJSON(String email) {
+        Database database = Database.getInstance();
+        UserEntity sender = database.getUserEntityHashMap().get(this.senderEmail);
+        UserEntity receiver = database.getUserEntityHashMap().get(this.receiverEmail);
+        OfferEntity offerEntity = database.getOfferEntityHashMap().get(this.offerId);
+        ProductEntity productEntity = database.getProductEntityHashMap().get(productId);
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id",this.id);
-        jsonObject.put("productId",this.productId);
-        jsonObject.put("content",this.content);
-        jsonObject.put("date",this.date);
-        jsonObject.put("offerId",this.offerId);
-        jsonObject.put("isArchive",this.isArchive);
-        jsonObject.put("status",this.status);
-        jsonObject.put("senderEmail",this.senderEmail);
-        jsonObject.put("receiverEmail",this.receiverEmail);
-        jsonObject.put("isOffered",(this.offerId > 0));
+        jsonObject.put("id", this.id);
+        jsonObject.put("productId", this.productId);
+        jsonObject.put("content", this.content);
+        jsonObject.put("date", this.date);
+        jsonObject.put("offerPrice", offerEntity == null ? 0 : offerEntity.getOfferPrice());
+        jsonObject.put("status", this.status);
+        jsonObject.put("senderEmail", this.senderEmail);
+        jsonObject.put("receiverEmail", this.receiverEmail);
+        jsonObject.put("isOffered", offerEntity == null ? -1 : offerEntity.getStatus());
+        if (!senderEmail.equals(email)) {
+            jsonObject.put("userName", sender == null ? "Anonymous" : sender.getUserName());
+            jsonObject.put("userAvatar", sender == null ? Path.getServerAddress() + database.getElementEntity().getDefaultAvatar() : sender.getProfilePicture());
+        } else {
+            jsonObject.put("userName", receiver == null ? "Anonymous" : receiver.getUserName());
+            jsonObject.put("userAvatar", receiver == null ? Path.getServerAddress() + database.getElementEntity().getDefaultAvatar() : receiver.getProfilePicture());
+        }
+        jsonObject.put("productDetail", productEntity.toProductSortDetailJSON());
         return jsonObject;
     }
 }

@@ -9,6 +9,8 @@ package com.marqet.WebServer.api;
 import com.marqet.WebServer.controller.ResponseController;
 import com.marqet.WebServer.controller.UserController;
 import com.marqet.WebServer.util.ApiParameterChecker;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -21,6 +23,7 @@ import java.io.PrintWriter;
 
 
 public class VerifyViaGoogleAPI extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.

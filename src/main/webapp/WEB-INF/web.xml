@@ -31,6 +31,30 @@
         <url-pattern>/GetUserDetail</url-pattern>
     </servlet-mapping>
     <servlet>
+        <servlet-name>AddPointAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.AddPointAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>AddPointAPI</servlet-name>
+        <url-pattern>/AddPointAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>GetPointAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.GetPointAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetPointAPI</servlet-name>
+        <url-pattern>/GetPointAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>ProcessBroadcastIdAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.ProcessBroadcastIdAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ProcessBroadcastIdAPI</servlet-name>
+        <url-pattern>/ProcessBroadcastIdAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <servlet-name>LoginViaEmailAPI</servlet-name>
         <servlet-class>com.marqet.WebServer.api.LoginViaEmailAPI</servlet-class>
     </servlet>
@@ -73,25 +97,22 @@
         <servlet-name>ChangePasswordAPI</servlet-name>
         <url-pattern>/ChangePasswordAPI</url-pattern>
     </servlet-mapping>
-
     <servlet>
-        <servlet-name>FindFriendListViaFacebookAPI</servlet-name>
-        <servlet-class>com.marqet.WebServer.api.FindFriendListViaFacebookAPI</servlet-class>
+        <servlet-name>ForgetPasswordAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.ForgetPasswordAPI</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>FindFriendListViaFacebookAPI</servlet-name>
-        <url-pattern>/FindFriendListViaFacebookAPI</url-pattern>
+        <servlet-name>ForgetPasswordAPI</servlet-name>
+        <url-pattern>/ForgetPasswordAPI</url-pattern>
     </servlet-mapping>
-
     <servlet>
-        <servlet-name>FindFriendListViaGoogleAPI</servlet-name>
-        <servlet-class>com.marqet.WebServer.api.FindFriendListViaGoogleAPI</servlet-class>
+        <servlet-name>FindFriendListAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.FindFriendListAPI</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>FindFriendListViaGoogleAPI</servlet-name>
-        <url-pattern>/FindFriendListViaGoogleAPI</url-pattern>
+        <servlet-name>FindFriendListAPI</servlet-name>
+        <url-pattern>/FindFriendListAPI</url-pattern>
     </servlet-mapping>
-
     <servlet>
         <servlet-name>VerifyViaGoogleAPI</servlet-name>
         <servlet-class>com.marqet.WebServer.api.VerifyViaGoogleAPI</servlet-class>
@@ -108,6 +129,15 @@
     <servlet-mapping>
         <servlet-name>VerifyViaFacebookAPI</servlet-name>
         <url-pattern>/VerifyViaFacebookAPI</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>EditProfileAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.EditProfileAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>EditProfileAPI</servlet-name>
+        <url-pattern>/EditProfileAPI</url-pattern>
     </servlet-mapping>
     <!--**COUNTRY**-->
     <servlet>
@@ -179,6 +209,14 @@
         <servlet-name>GetListBigBannerAPI</servlet-name>
         <url-pattern>/GetListBigBannerAPI</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>GetListWaitingBigBannerAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.GetListWaitingBigBannerAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetListWaitingBigBannerAPI</servlet-name>
+        <url-pattern>/GetListWaitingBigBannerAPI</url-pattern>
+    </servlet-mapping>
     <!--**SMALLBANNER**-->
     <servlet>
         <servlet-name>GetListSmallBannerAPI</servlet-name>
@@ -187,6 +225,22 @@
     <servlet-mapping>
         <servlet-name>GetListSmallBannerAPI</servlet-name>
         <url-pattern>/GetListSmallBannerAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>GetListWaitingSmallBannerAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.GetListWaitingSmallBannerAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetListWaitingSmallBannerAPI</servlet-name>
+        <url-pattern>/GetListWaitingSmallBannerAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>PutSmallBannerAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.PutSmallBannerAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>PutSmallBannerAPI</servlet-name>
+        <url-pattern>/PutSmallBannerAPI</url-pattern>
     </servlet-mapping>
     <!--**INFORMATION**-->
     <servlet>
@@ -205,6 +259,22 @@
     <servlet-mapping>
         <servlet-name>GetListProductByCountryCodeAPI</servlet-name>
         <url-pattern>/GetListProductByCountryCodeAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>GetList30ProductWatchedAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.GetList30ProductWatchedAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetList30ProductWatchedAPI</servlet-name>
+        <url-pattern>/GetList30ProductWatchedAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>GetListProductByCategoryAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.GetListProductByCategoryAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetListProductByCategoryAPI</servlet-name>
+        <url-pattern>/GetListProductByCategoryAPI</url-pattern>
     </servlet-mapping>
     <servlet>
         <servlet-name>GetProductDetailAPI</servlet-name>
@@ -270,7 +340,14 @@
         <servlet-name>GetListProductByFilterAPI</servlet-name>
         <url-pattern>/GetListProductByFilterAPI</url-pattern>
     </servlet-mapping>
-
+    <servlet>
+        <servlet-name>MarkProductAsSoldAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.MarkProductAsSoldAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MarkProductAsSoldAPI</servlet-name>
+        <url-pattern>/MarkProductAsSoldAPI</url-pattern>
+    </servlet-mapping>
     <!--**COMMENT**-->
     <servlet>
         <servlet-name>CommentProductAPI</servlet-name>
@@ -324,6 +401,14 @@
         <url-pattern>/FollowFriendAPI</url-pattern>
     </servlet-mapping>
     <servlet>
+        <servlet-name>UnfollowFriendAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.UnfollowFriendAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>UnfollowFriendAPI</servlet-name>
+        <url-pattern>/UnfollowFriendAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
         <servlet-name>GetListFollowingAPI</servlet-name>
         <servlet-class>com.marqet.WebServer.api.GetListFollowingAPI</servlet-class>
     </servlet>
@@ -357,28 +442,12 @@
         <url-pattern>/GetListFeedbackBuyerAPI</url-pattern>
     </servlet-mapping>
     <servlet>
-        <servlet-name>GetListFeedbackRequiredAPI</servlet-name>
-        <servlet-class>com.marqet.WebServer.api.GetListFeedbackRequiredAPI</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>GetListFeedbackRequiredAPI</servlet-name>
-        <url-pattern>/GetListFeedbackRequiredAPI</url-pattern>
-    </servlet-mapping>
-    <servlet>
         <servlet-name>FeedbackProductAPI</servlet-name>
         <servlet-class>com.marqet.WebServer.api.FeedbackProductAPI</servlet-class>
     </servlet>
     <servlet-mapping>
         <servlet-name>FeedbackProductAPI</servlet-name>
         <url-pattern>/FeedbackProductAPI</url-pattern>
-    </servlet-mapping>
-    <servlet>
-        <servlet-name>RequireFeedbackAPI</servlet-name>
-        <servlet-class>com.marqet.WebServer.api.RequireFeedbackAPI</servlet-class>
-    </servlet>
-    <servlet-mapping>
-        <servlet-name>RequireFeedbackAPI</servlet-name>
-        <url-pattern>/RequireFeedbackAPI</url-pattern>
     </servlet-mapping>
     <!--**WATCHLIST**-->
     <servlet>
@@ -389,6 +458,22 @@
         <servlet-name>AddWatchListAPI</servlet-name>
         <url-pattern>/AddWatchListAPI</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>GetWatchListAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.GetWatchListAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetWatchListAPI</servlet-name>
+        <url-pattern>/GetWatchListAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>DeleteWatchListAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.DeleteWatchListAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeleteWatchListAPI</servlet-name>
+        <url-pattern>/DeleteWatchListAPI</url-pattern>
+    </servlet-mapping>
     <!--**MESSAGE**-->
     <servlet>
         <servlet-name>GetListMessageAllAPI</servlet-name>
@@ -397,6 +482,22 @@
     <servlet-mapping>
         <servlet-name>GetListMessageAllAPI</servlet-name>
         <url-pattern>/GetListMessageAllAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>GetListMessageArchivedAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.GetListMessageArchivedAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetListMessageArchivedAPI</servlet-name>
+        <url-pattern>/GetListMessageArchivedAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>ArchivedMessageAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.ArchivedMessageAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>ArchivedMessageAPI</servlet-name>
+        <url-pattern>/ArchivedMessageAPI</url-pattern>
     </servlet-mapping>
     <servlet>
         <servlet-name>GetListMessageBuyerAPI</servlet-name>
@@ -415,12 +516,28 @@
         <url-pattern>/GetListMessageSellerAPI</url-pattern>
     </servlet-mapping>
     <servlet>
-        <servlet-name>GetListSubMessageAPI</servlet-name>
-        <servlet-class>com.marqet.WebServer.api.GetListSubMessageAPI</servlet-class>
+        <servlet-name>DeleteMessageAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.DeleteMessageAPI</servlet-class>
     </servlet>
     <servlet-mapping>
-        <servlet-name>GetListSubMessageAPI</servlet-name>
-        <url-pattern>/GetListSubMessageAPI</url-pattern>
+        <servlet-name>DeleteMessageAPI</servlet-name>
+        <url-pattern>/DeleteMessageAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>GetListSubMessageHistoryAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.GetListSubMessageHistoryAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetListSubMessageHistoryAPI</servlet-name>
+        <url-pattern>/GetListSubMessageHistoryAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>GetListSubMessageNewAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.GetListSubMessageNewAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetListSubMessageNewAPI</servlet-name>
+        <url-pattern>/GetListSubMessageNewAPI</url-pattern>
     </servlet-mapping>
     <servlet>
         <servlet-name>PostSubMessageAPI</servlet-name>
@@ -429,6 +546,23 @@
     <servlet-mapping>
         <servlet-name>PostSubMessageAPI</servlet-name>
         <url-pattern>/PostSubMessageAPI</url-pattern>
+    </servlet-mapping>
+    <!--**ACTIVITY**-->
+    <servlet>
+        <servlet-name>GetListActivityAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.GetListActivityAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetListActivityAPI</servlet-name>
+        <url-pattern>/GetListActivityAPI</url-pattern>
+    </servlet-mapping>
+    <servlet>
+        <servlet-name>DeleteActivityAPI</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.DeleteActivityAPI</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>DeleteActivityAPI</servlet-name>
+        <url-pattern>/DeleteActivityAPI</url-pattern>
     </servlet-mapping>
     <!--**BROADCAST**-->
     <servlet>
@@ -439,9 +573,17 @@
         <servlet-name>GCMBroadcast</servlet-name>
         <url-pattern>/GCMBroadcast</url-pattern>
     </servlet-mapping>
-
+    <!--**TEST**-->
+    <servlet>
+        <servlet-name>Test</servlet-name>
+        <servlet-class>com.marqet.WebServer.api.Test</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>Test</servlet-name>
+        <url-pattern>/Test</url-pattern>
+    </servlet-mapping>
     <!-- ********************************************************************************************************* -->
-    <!-- SERVLET -->
+    <!--SERVLETS -->
     <!--**Account**-->
     <servlet>
         <servlet-name>Login</servlet-name>

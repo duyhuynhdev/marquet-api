@@ -2,6 +2,7 @@ package com.marqet.WebServer.pojo;
 
 import com.marqet.WebServer.util.Database;
 import com.marqet.WebServer.util.Path;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import javax.persistence.*;
@@ -11,7 +12,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name = "SmallBanner", schema = "", catalog = "marqet")
-public class SmallBannerEntity {
+public class SmallBannerEntity implements Comparable {
     private long id;
     private String coverImg;
     private String status;
@@ -80,6 +81,7 @@ public class SmallBannerEntity {
     public void setEmail(String email) {
         this.email = email;
     }
+
     @Basic
     @Column(name = "productId", nullable = false, insertable = true, updatable = true)
     public long getProductId() {
@@ -89,6 +91,7 @@ public class SmallBannerEntity {
     public void setProductId(long productId) {
         this.productId = productId;
     }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -116,60 +119,129 @@ public class SmallBannerEntity {
         return result;
     }
 
-    public JSONObject toJSON(){
+    public JSONObject toJSON() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id",this.id);
+        jsonObject.put("id", this.id);
         jsonObject.put("coverImg", this.coverImg);
-        jsonObject.put("status",this.status);
-        jsonObject.put("setTime",this.setTime);
-        jsonObject.put("email",this.email);
-        jsonObject.put("productId",this.productId);
+        jsonObject.put("status", this.status);
+        jsonObject.put("setTime", this.setTime);
+        jsonObject.put("email", this.email);
+        jsonObject.put("productId", this.productId);
         return jsonObject;
     }
-    public JSONObject toDetailJSON(){
+
+    public JSONObject toDetailJSON() {
         JSONObject jsonObject = new JSONObject();
         String coverImg = this.coverImg;
-        jsonObject.put("coverImg", Path.getServerAddress()+(coverImg.equals("") ? Path.getDefaultSmallBannerImagePath(): coverImg));
-        jsonObject.put("productId",this.productId);
         ProductEntity product = Database.getInstance().getProductEntityHashMap().get(this.productId);
-        if(product!=null){
-            jsonObject.put("productName",product.getName());
-            jsonObject.put("productPrice",product.getPrice());
-        }else{
-            jsonObject.put("productName","deleted");
-            jsonObject.put("productPrice",0);
-        }
-        return jsonObject;
-    }
-    public static JSONObject convertToDetailJSON(ProductEntity product){
-        JSONObject jsonObject = new JSONObject();
-        String productImage = "";
+        JSONArray jsonVideo = new JSONArray();
         try{
-            JSONObject productImages = new JSONObject(product.getProductImages());
-            productImage = productImages.getJSONArray("thumbnail").getString(0);
+            jsonVideo = new JSONArray(product.getProductVideo());
         }catch (Exception ex){
 
         }
-        jsonObject.put("coverImg", Path.getServerAddress()+(productImage.equals("") ? Path.getDefaultSmallBannerImagePath(): productImage));
-        if(product!=null){
-            jsonObject.put("productId",product.getId());
-            jsonObject.put("productName",product.getName());
-            jsonObject.put("productPrice",product.getPrice());
-        }else{
-            jsonObject.put("productId",0);
-            jsonObject.put("productName","deleted");
-            jsonObject.put("productPrice",0);
+        if (jsonVideo.length() == 0) {
+            if (!product.getProductImages().equals("") && new JSONObject(product.getProductImages()).getJSONArray("thumbnail").length() > 0) {
+                try {
+                    coverImg = new JSONObject(product.getProductImages()).getJSONArray("thumbnail").getString(0);
+                } catch (Exception ignored) {
+                }
+            }
+        } else {
+            try {
+                coverImg = new JSONArray(product.getProductVideo()).getString(1);
+            } catch (Exception ignored) {
+            }
+        }
+        jsonObject.put("coverImg", Path.getServerAddress() + (coverImg.equals("") ? Path.getDefaultSmallBannerImagePath() : coverImg));
+        jsonObject.put("productId", this.productId);
+        if (product != null) {
+            jsonObject.put("productName", product.getName());
+            jsonObject.put("productPrice", product.getPrice());
+        } else {
+            jsonObject.put("productName", "deleted");
+            jsonObject.put("productPrice", 0);
+        }
+        return jsonObject;
+    }
+    public JSONObject toDetailWithProductJSON(String email) {
+        JSONObject jsonObject = new JSONObject();
+        String coverImg = this.coverImg;
+        ProductEntity product = Database.getInstance().getProductEntityHashMap().get(this.productId);
+        JSONArray jsonVideo = new JSONArray();
+        try{
+            jsonVideo = new JSONArray(product.getProductVideo());
+        }catch (Exception ex){
+
+        }
+        if (jsonVideo.length() == 0) {
+            if (!product.getProductImages().equals("") && new JSONObject(product.getProductImages()).getJSONArray("thumbnail").length() > 0) {
+                try {
+                    coverImg = new JSONObject(product.getProductImages()).getJSONArray("thumbnail").getString(0);
+                } catch (Exception ignored) {
+                }
+            }
+        } else {
+            try {
+                coverImg = new JSONArray(product.getProductVideo()).getString(1);
+            } catch (Exception ignored) {
+            }
+        }
+        jsonObject.put("coverImg", Path.getServerAddress() + (coverImg.equals("") ? Path.getDefaultBigBannerImagePath() : coverImg));
+        ProductEntity productEntity = Database.getInstance().getProductEntityHashMap().get(this.productId);
+        jsonObject.put("product", productEntity == null ? "{}" : productEntity.toProductDetailJSON(email));
+        return jsonObject;
+    }
+
+    public JSONObject convertToDetailJSON(ProductEntity product) {
+        JSONObject jsonObject = new JSONObject();
+        String coverImg = this.coverImg;
+        JSONArray jsonVideo = new JSONArray();
+        try{
+            jsonVideo = new JSONArray(product.getProductVideo());
+        }catch (Exception ex){
+
+        }
+        if (jsonVideo.length() == 0) {
+            if (!product.getProductImages().equals("") && new JSONObject(product.getProductImages()).getJSONArray("thumbnail").length() > 0) {
+                try {
+                    coverImg = new JSONObject(product.getProductImages()).getJSONArray("thumbnail").getString(0);
+                } catch (Exception ignored) {
+                }
+            }
+        } else {
+            try {
+                coverImg = new JSONArray(product.getProductVideo()).getString(1);
+            } catch (Exception ignored) {
+            }
+        }
+        jsonObject.put("coverImg", Path.getServerAddress() + (coverImg.equals("") ? Path.getDefaultSmallBannerImagePath() : coverImg));
+        if (product != null) {
+            jsonObject.put("productId", product.getId());
+            jsonObject.put("productName", product.getName());
+            jsonObject.put("productPrice", product.getPrice());
+        } else {
+            jsonObject.put("productId", 0);
+            jsonObject.put("productName", "deleted");
+            jsonObject.put("productPrice", 0);
         }
         return jsonObject;
     }
 
-    public static JSONObject toDefaultDetailJSON(){
+    public static JSONObject toDefaultDetailJSON() {
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("coverImg", Path.getServerAddress()+ Path.getDefaultSmallBannerImagePath());
-            jsonObject.put("productId",0);
-            jsonObject.put("productName","New Product");
-            jsonObject.put("productPrice",10000);
+        jsonObject.put("coverImg", Path.getServerAddress() + Path.getDefaultSmallBannerImagePath());
+        jsonObject.put("productId", 0);
+        jsonObject.put("productName", "New Product");
+        jsonObject.put("productPrice", 10000);
         return jsonObject;
     }
 
+    @Override
+    public int compareTo(Object o) {
+        SmallBannerEntity that = (SmallBannerEntity) o;
+        if (this.getSetTime() > that.getSetTime())
+            return 0;
+        return -1;
+    }
 }

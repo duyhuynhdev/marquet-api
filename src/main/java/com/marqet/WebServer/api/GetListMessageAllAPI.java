@@ -9,6 +9,8 @@ package com.marqet.WebServer.api;
 import com.marqet.WebServer.controller.MessageController;
 import com.marqet.WebServer.controller.ResponseController;
 import com.marqet.WebServer.util.ApiParameterChecker;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -21,6 +23,7 @@ import java.io.PrintWriter;
 
 
 public class GetListMessageAllAPI extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -43,6 +46,7 @@ public class GetListMessageAllAPI extends HttpServlet {
                 jsonData.append(line);
             }
             JSONObject requestJSON = new JSONObject(jsonData.toString());
+            logger.info(LoggerFactory.REQUEST+requestJSON);
             // check enough parameter
             String parameters = "email";
             JSONObject resultCheckerJSON = ApiParameterChecker.check(requestJSON.keySet(), parameters);
@@ -53,11 +57,14 @@ public class GetListMessageAllAPI extends HttpServlet {
                 int numMessage = requestJSON.getInt("numMessage");
                 MessageController controller = new MessageController();
                 //get list Message
-                out.print(controller.getListConversationAll(email, startIdx, numMessage));
+                JSONObject result = controller.getListConversationAll(email, startIdx, numMessage);
+                logger.info(LoggerFactory.RESPONSE + result);
+                out.print(result);
             } else {
                 out.print(resultCheckerJSON);
             }
         }catch (Exception ex){
+            logger.error(ex.getStackTrace());
             out.print(ResponseController.createErrorJSON(ex.getMessage()));
         }
     }

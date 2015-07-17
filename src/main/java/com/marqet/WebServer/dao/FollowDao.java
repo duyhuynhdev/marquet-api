@@ -8,60 +8,62 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
  * Created by hpduy17 on 3/16/15.
  */
 public class FollowDao {
-    public boolean insert(FollowEntity object){
+    public boolean insert(FollowEntity object) {
         boolean result = false;
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = null;
-        try{
+        try {
             transaction = session.beginTransaction();
             session.save(object);
             transaction.commit();
             result = true;
-        }catch (HibernateException ex){
+        } catch (HibernateException ex) {
             transaction.rollback();
             ex.printStackTrace();
-        }finally {
+        } finally {
             session.close();
         }
         return result;
     }
-    public boolean update(FollowEntity object){
+
+    public boolean update(FollowEntity object) {
         boolean result = false;
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = null;
-        try{
+        try {
             transaction = session.beginTransaction();
             session.update(object);
             transaction.commit();
             result = true;
-        }catch (HibernateException ex){
+        } catch (HibernateException ex) {
             transaction.rollback();
             ex.printStackTrace();
-        }finally {
+        } finally {
             session.close();
         }
         return result;
     }
-    public boolean delete(FollowEntity object){
+
+    public boolean delete(FollowEntity object) {
         boolean result = false;
         Session session = HibernateUtil.getSessionFactory().openSession();
         Transaction transaction = null;
-        try{
+        try {
             transaction = session.beginTransaction();
             session.delete(object);
             transaction.commit();
             result = true;
-        }catch (HibernateException ex){
+        } catch (HibernateException ex) {
             transaction.rollback();
             ex.printStackTrace();
-        }finally {
+        } finally {
             session.close();
         }
         return result;
@@ -75,21 +77,21 @@ public class FollowDao {
             List<FollowEntity> list = (List<FollowEntity>) session
                     .createCriteria(FollowEntity.class).list();
             for (FollowEntity obj : list) {
-                database.getFollowEntityList().put(obj.getId(),obj);
+                database.getFollowEntityList().put(obj.getId(), obj);
                 //backup followMapIdRF;
-                database.getFollowMapIdRF().put(obj.getFollower()+"#"+obj.getBeFollower(),obj.getId());
+                database.getFollowMapIdRF().put(obj.getFollower() + "#" + obj.getBeFollower(), obj.getId());
                 //backup followerRF
-                List<String> followers = database.getFollowerRF().get(obj.getBeFollower());
-                if(followers==null)
-                    followers = new ArrayList<>();
+                HashSet<String> followers = database.getFollowerRF().get(obj.getBeFollower());
+                if (followers == null)
+                    followers = new HashSet<>();
                 followers.add(obj.getFollower());
-                database.getFollowerRF().put(obj.getBeFollower(),followers);
+                database.getFollowerRF().put(obj.getBeFollower(), followers);
                 //backup followingRF
-                List<String> beFollowers = database.getFollowerRF().get(obj.getFollower());
-                if(beFollowers==null)
-                    beFollowers = new ArrayList<>();
+                HashSet<String> beFollowers = database.getFollowingRF().get(obj.getFollower());
+                if (beFollowers == null)
+                    beFollowers = new HashSet<>();
                 beFollowers.add(obj.getBeFollower());
-                database.getFollowerRF().put(obj.getFollower(),beFollowers);
+                database.getFollowingRF().put(obj.getFollower(), beFollowers);
             }
             session.close();
         } catch (HibernateException ex) {

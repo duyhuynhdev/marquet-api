@@ -12,20 +12,22 @@
             <column name="date" sql-type="bigint" not-null="true"/>
         </property>
         <property name="action">
-            <column name="action" sql-type="varchar" length="100" not-null="true"/>
+            <column name="action" sql-type="int" not-null="true"/>
         </property>
-        <property name="object">
-            <column name="object" sql-type="varchar" length="100" not-null="true"/>
+        <property name="ref">
+            <column name="ref" sql-type="int" not-null="true"/>
         </property>
         <property name="subjectEmail">
             <column name="subjectEmail" sql-type="varchar" length="100" not-null="true"/>
         </property>
+        <property name="isRead">
+            <column name="isRead" sql-type="int" not-null="true"/>
+        </property>
         <property name="objectEmail">
             <column name="objectEmail" sql-type="varchar" length="100" not-null="true"/>
         </property>
-        <property name="isRead">
-            <column name="isRead" sql-type="tinyint" not-null="true"/>
+        <property name="ownerEmail">
+            <column name="ownerEmail" sql-type="varchar" length="100" not-null="true"/>
         </property>
-
     </class>
 </hibernate-mapping>

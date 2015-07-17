@@ -10,6 +10,8 @@ import com.marqet.WebServer.controller.ProductController;
 import com.marqet.WebServer.controller.ResponseController;
 import com.marqet.WebServer.util.ApiParameterChecker;
 import com.marqet.WebServer.util.Database;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -27,6 +29,7 @@ import java.util.List;
 
 @MultipartConfig
 public class AddProductAPI extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -46,33 +49,51 @@ public class AddProductAPI extends HttpServlet {
             String parameters = "email,title,cityCode,price,subCategoryId,description,numImg";
             JSONObject resultCheckerJSON = ApiParameterChecker.check(request.getParameterMap().keySet(), parameters);
             if (ResponseController.isSuccess(resultCheckerJSON)) {
+                logger.info(LoggerFactory.REQUEST+request.getQueryString());
                 int numberImage = Integer.parseInt(request.getParameter("numImg"));
                 List<Part> productImages = null;
-                if (request.getContentType().startsWith("multipart/form-data")) {
+                List<Part> videoAndThumbnail = null;
+                if (request.getContentType() != null && request.getContentType().startsWith("multipart/form-data")) {
                     productImages = new ArrayList<>();
                     for (int i = 1; i <= numberImage; i++) {
-                        productImages.add(request.getPart("productImage" + i));
-
+                        if (request.getPart("productImage" + i) != null) {
+                            productImages.add(request.getPart("productImage" + i));
+                        }
                     }
+                    if(request.getPart("productVideo") != null){
+                        videoAndThumbnail = new ArrayList<>();
+                        videoAndThumbnail.add(request.getPart("productVideo"));
+                        videoAndThumbnail.add(request.getPart("productThumbnailVideo"));
+                    }
+
                 }
                 //encoding utf8
-                String [] src =  URLDecoder.decode(request.getQueryString(), "UTF-8").split("&");
-                HashMap<String,String> req = Database.getInstance().convertArrStringToHashMap(src,"=");
+                String[] src;
+                HashMap<String, String> req = null;
+                try {
+                    src = URLDecoder.decode(request.getQueryString().replace("&", "#DUY#"), "UTF-8").split("#DUY#");
+                    req = Database.getInstance().convertArrStringToHashMap(src, "=");
+                } catch (Exception ignored) {
 
+                }
                 //get parameter
-                String title = req.get("title");
-                String description = req.get("description");
-                String email = req.get("email");
-                long price = Long.parseLong(req.get("price"));
-                long subCategoryId = Long.parseLong(req.get("subCategoryId"));
-                String cityCode = req.get("cityCode");
+                String title = req == null ? request.getParameter("title") : req.get("title");
+                String description = req == null ? request.getParameter("description") : req.get("description");
+                String email = req == null ? request.getParameter("email") : req.get("email");
+                long price = Long.parseLong(request.getParameter("price"));
+                long subCategoryId = Long.parseLong(request.getParameter("subCategoryId"));
+                String cityCode = request.getParameter("cityCode");
                 ProductController controller = new ProductController();
                 //add product
-                out.print(controller.addProduct(email, title, cityCode, price, subCategoryId, description, productImages));
+                JSONObject result = controller.addProduct(email, title, cityCode, price, subCategoryId, description, productImages,videoAndThumbnail);
+                logger.info(LoggerFactory.RESPONSE+result);
+                out.print(result);
             } else {
                 out.print(resultCheckerJSON);
             }
+
         } catch (Exception ex) {
+            logger.error(ex.getStackTrace());
             out.print(ResponseController.createErrorJSON(ex.getMessage()));
         }
     }

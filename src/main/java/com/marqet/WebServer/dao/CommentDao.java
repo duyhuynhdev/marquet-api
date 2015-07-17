@@ -8,7 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -74,10 +74,10 @@ public class CommentDao {
                     .createCriteria(CommentEntity.class).list();
             for (CommentEntity obj : list) {
                 Database.getInstance().getCommentEntityHashMap().put((long)obj.getId(), obj);
-                List<Long> commentList = Database.getInstance().getCommentRFbyProductId().get((long)obj.getProductId());
+                HashSet<Long> commentList = Database.getInstance().getCommentRFbyProductId().get((long)obj.getProductId());
                 if(commentList==null)
-                    commentList = new ArrayList<>();
-                commentList.add((long)obj.getId());
+                    commentList = new HashSet<>();
+                commentList.add(obj.getId());
                 Database.getInstance().getCommentRFbyProductId().put((long)obj.getProductId(),commentList);
             }
             session.close();

@@ -3,26 +3,31 @@ package com.marqet.WebServer.api;
 import com.google.android.gcm.server.Message;
 import com.google.android.gcm.server.MulticastResult;
 import com.google.android.gcm.server.Sender;
-import com.marqet.WebServer.pojo.UserEntity;
 import com.marqet.WebServer.util.Database;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
+import org.json.JSONArray;
 import org.json.JSONObject;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 public class GCMBroadcast extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     private static final long serialVersionUID = 1L;
 
     // The SENDER_ID here is the "Browser Key" that was generated when I
     // created the API keys for my Google APIs project.
-    private static final String SENDER_ID = "AIzaSyDJK0UYHQUKwUfgyYrnfDnJl8SpsSPeTdo";
+    private static final String SENDER_ID = "AIzaSyA39dBAGpIRtjGKvE1xZ1GEUiuIVZEImWk";
 
     // This is a *cheat*  It is a hard-coded registration ID from an Android device
     // that registered itself with GCM using the same project id shown above.
@@ -55,27 +60,31 @@ public class GCMBroadcast extends HttpServlet {
         // We'll collect the "CollapseKey" and "Message" values from our JSP page
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
+        StringBuffer jsonData = new StringBuffer();
+        String line;
+        BufferedReader reader = request.getReader();
+        while ((line = reader.readLine()) != null) {
+            jsonData.append(line);
+        }
+        JSONObject requestJSON = new JSONObject(jsonData.toString());
         String collapseKey = "";
         //Mess send for each userId
-        List<JSONObject> usersMessage;
-        // List user you want to sent norti
-        List<String> usersEmails ;
+        JSONArray content;
+        // List user you want to sent notification
+        JSONArray emails;
         // List Message
         List<Message> lstMessage = new ArrayList<Message>();
-        String Norti = "";
         PrintWriter out = response.getWriter();
         List<List<String>> androidTargets = new ArrayList<>();
         try {
-            usersMessage = (List<JSONObject>) request.getAttribute("message");
-            Norti = (String) request.getAttribute("norti");
-            collapseKey = (String) request.getAttribute("collapseKey");
-            usersEmails = (List<String>) request.getAttribute("userEmail");
-
+            content = requestJSON.getJSONArray("contents");
+            collapseKey =  requestJSON.getString("collapseKey");
+            emails = requestJSON.getJSONArray("emails");
             // add all device each user into each android target list
-            for (int i = 0; i < usersEmails.size(); i++) {
-                UserEntity user = Database.getInstance().getUserEntityHashMap().get(usersEmails.get(i));
+            for (int i = 0; i < emails.length(); i++) {
+                HashMap<String, String> listRegId = Database.getInstance().getBroadcastLogRFEmail().get(emails.getString(i));
                 List<String> target = new ArrayList<>();
-                target.addAll(new ArrayList<>(Arrays.asList(user.getBroadcastId().split(","))));
+                target.addAll(new ArrayList<>(listRegId.values()));
                 androidTargets.add(target);
                 Message message = new Message.Builder()
                         // If multiple messages are sent using the same .collapseKey()
@@ -85,12 +94,12 @@ public class GCMBroadcast extends HttpServlet {
                         .collapseKey(collapseKey)
                         .timeToLive(30)
                         .delayWhileIdle(true)
-                        .addData("price", URLEncoder.encode(usersMessage.get(i).toString(),"UTF-8"))
+                        .addData("content", URLEncoder.encode(content.getString(i), "UTF-8"))
                         .build();
                 lstMessage.add(message);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error(e.getStackTrace());
             return;
         }
 
@@ -107,34 +116,24 @@ public class GCMBroadcast extends HttpServlet {
             // use this for multicast messages.  The second parameter
             // of sender.send() will need to be an array of register ids.
             // for each user you have sent user's mess to user's devices
-            for (int i = 0; i < usersEmails.size(); i++) {
+            for (int i = 0; i < emails.length(); i++) {
                 Sender sender = new Sender(SENDER_ID);
                 if (androidTargets.get(i).isEmpty()) {
                     continue;
                 }
-
                 MulticastResult result = sender.send(lstMessage.get(i), androidTargets.get(i), 1);
-
                 if (result.getResults() != null) {
                     int canonicalRegId = result.getCanonicalIds();
                     if (canonicalRegId != 0) {
-
                     }
                 } else {
                     int error = result.getFailure();
-                    System.out.println("Broadcast to " + usersEmails.get(i) + "  failure: " + error);
+                    logger.error("Broadcast to " + emails.get(i) + "  failure: " + error);
                 }
-
             }
-
-
-
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        //Respone to sender
-        if (Norti.equals("") == false) {
-            out.print(Norti);
+            out.print(e.getMessage());
         }
         // We'll pass the CollapseKey and Message values back to gcmtest.jsp, only so
         // we can display it in our form again.

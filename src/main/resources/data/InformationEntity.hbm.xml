@@ -11,7 +11,7 @@
         <property name="communityRule">
             <column name="communityRule" sql-type="text" length="65535" not-null="true"/>
         </property>
-        <property name="pointSystem">
+        <property name="helpFAQ">
             <column name="pointSystem" sql-type="text" length="65535" not-null="true"/>
         </property>
         <property name="emailSupport">

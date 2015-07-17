@@ -7,6 +7,9 @@
 package com.marqet.WebServer.api;
 
 import com.marqet.WebServer.controller.CountryController;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,6 +20,7 @@ import java.io.PrintWriter;
 
 
 public class GetListCountryAPI extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -31,8 +35,11 @@ public class GetListCountryAPI extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
+        logger.info(LoggerFactory.REQUEST + "{}");
         CountryController controller = new CountryController();
-        out.print(controller.getListCountry());
+        JSONObject result = controller.getListCountry();
+        logger.info(LoggerFactory.RESPONSE + result);
+        out.print(result);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

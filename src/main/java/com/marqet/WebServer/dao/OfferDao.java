@@ -9,7 +9,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -77,18 +77,18 @@ public class OfferDao {
             for (OfferEntity obj : list) {
                 database.getOfferEntityHashMap().put(obj.getId(), obj);
                 //put to email RF
-                List<Long> offerList = database.getOfferRFbyEmail().get(obj.getBuyerEmail());
+                HashSet<Long> offerList = database.getOfferRFbyEmail().get(obj.getBuyerEmail());
                 if(offerList==null)
-                    offerList = new ArrayList<>();
+                    offerList = new HashSet<>();
                 offerList.add(obj.getId());
                 database.getOfferRFbyEmail().put(obj.getBuyerEmail(),offerList);
                 //put to wait Reply offer
                 if(obj.getStatus()<0){
                     ProductEntity product = database.getProductEntityHashMap().get(obj.getProductId());
                     if(product!=null) {
-                        List<Long> waitingList = database.getOfferRFbyEmail().get(product.getEmail());
+                        HashSet<Long> waitingList = database.getOfferRFbyEmail().get(product.getEmail());
                         if (waitingList == null)
-                            waitingList = new ArrayList<>();
+                            waitingList = new HashSet<>();
                         waitingList.add(obj.getId());
                         database.getOfferRFbyEmail().put(product.getEmail(), waitingList);
                     }

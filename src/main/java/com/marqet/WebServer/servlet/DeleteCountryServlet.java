@@ -23,8 +23,19 @@ public class DeleteCountryServlet extends HttpServlet {
             JSONObject responseJSON = controller.deleteCountry(code);
             if(responseJSON.get(ResponseController.RESULT).equals(ResponseController.SUCCESS))
                  response.sendRedirect("country.marqet");
+            else{
+                request.setAttribute("isError", true);
+                request.setAttribute("errorTitle", "Add country fail");
+                request.setAttribute("errorMessage",responseJSON.get(ResponseController.CONTENT));
+                request.getRequestDispatcher("country.marqet").forward(request,response);
+            }
+
         }catch (Exception ex){
             ex.printStackTrace();
+            request.setAttribute("isError", true);
+            request.setAttribute("errorTitle", "Delete country exception");
+            request.setAttribute("errorMessage",ex.getMessage());
+            request.getRequestDispatcher("country.marqet").forward(request, response);
         }
     }
     @Override

@@ -1,13 +1,14 @@
 package com.marqet.WebServer.controller;
 
 import com.marqet.WebServer.dao.StuffLikedDao;
+import com.marqet.WebServer.pojo.ProductEntity;
 import com.marqet.WebServer.pojo.StuffLikedEntity;
+import com.marqet.WebServer.util.ActivityUtil;
 import com.marqet.WebServer.util.Database;
 import com.marqet.WebServer.util.IdGenerator;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
 /**
  * Created by hpduy17 on 3/22/15.
@@ -26,20 +27,27 @@ public class StuffLikedController {
         stuffLiked.setProductId(productId);
         database.getStuffLikedEntityHashMap().put(stuffLiked.getId(), stuffLiked);
         //put to stuffLikedRFProductId;
-        List<Long> stuffLikedList = database.getStuffLikedRFbyProductId().get(productId);
+        HashSet<Long> stuffLikedList = database.getStuffLikedRFbyProductId().get(productId);
         if (stuffLikedList == null)
-            stuffLikedList = new ArrayList<>();
+            stuffLikedList = new HashSet<>();
         stuffLikedList.add(stuffLiked.getId());
         database.getStuffLikedRFbyProductId().put(productId, stuffLikedList);
         //put to stuffLikedByEmail
-        List<Long> stuffLikedList2 = database.getStuffLikedRFbyEmail().get(email);
+        HashSet<Long> stuffLikedList2 = database.getStuffLikedRFbyEmail().get(email);
         if (stuffLikedList2 == null)
-            stuffLikedList2 = new ArrayList<>();
+            stuffLikedList2 = new HashSet<>();
         stuffLikedList2.add(stuffLiked.getId());
         database.getStuffLikedRFbyEmail().put(email, stuffLikedList2);
         database.getStuffLikedRFbyEmailAndProductId().put(email+"#"+productId,stuffLiked.getId());
-        if (dao.insert(stuffLiked))
+        if (dao.insert(stuffLiked)) {
             responseJSON = ResponseController.createSuccessJSON();
+            try{
+                ProductEntity product = database.getProductEntityHashMap().get(productId);
+                new ActivityController().insertActivity(email, product.getEmail(), ActivityUtil.LIKE_PRODUCT,product.getId());
+            }catch (Exception ignored){
+
+            }
+        }
         else
             responseJSON = ResponseController.createFailJSON("Cannot insert to database\n");
 

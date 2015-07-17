@@ -27,8 +27,19 @@ public class AddCityServlet extends HttpServlet {
             JSONObject responseJSON = controller.addCity(name,countryCode,code);
             if(responseJSON.get(ResponseController.RESULT).equals(ResponseController.SUCCESS))
                  response.sendRedirect("city-state.marqet?countryCode="+countryCode);
+            else{
+                request.setAttribute("isError", true);
+                request.setAttribute("errorTitle", "Add city fail");
+                request.setAttribute("errorMessage",responseJSON.get(ResponseController.CONTENT));
+                request.getRequestDispatcher("city-state.marqet?countryCode="+countryCode).forward(request,response);
+            }
+
         }catch (Exception ex){
             ex.printStackTrace();
+            request.setAttribute("isError", true);
+            request.setAttribute("errorTitle", "Add city exception");
+            request.setAttribute("errorMessage",ex.getMessage());
+            request.getRequestDispatcher("city-state.marqet?countryCode="+request.getParameter("countryCode")).forward(request, response);
         }
     }
     @Override

@@ -11,6 +11,8 @@ import com.marqet.WebServer.controller.UserController;
 import com.marqet.WebServer.util.ApiParameterChecker;
 import com.marqet.WebServer.util.Database;
 import com.marqet.WebServer.util.DateTimeUtil;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -23,6 +25,7 @@ import java.io.PrintWriter;
 
 
 public class RegisterViaSocialNetworkAPI extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -45,6 +48,7 @@ public class RegisterViaSocialNetworkAPI extends HttpServlet {
                 jsonData.append(line);
             }
             JSONObject requestJSON = new JSONObject(jsonData.toString());
+            logger.info(LoggerFactory.REQUEST+requestJSON);
             // check enough parameter
             String parameters = "username,email,profilePicture";
             JSONObject resultCheckerJSON = ApiParameterChecker.check(requestJSON.keySet(), parameters);
@@ -64,16 +68,26 @@ public class RegisterViaSocialNetworkAPI extends HttpServlet {
                 String countryCode = "S";
                 String cityCode = "S";
                 if(controller.loginViaSocialId(email)){
-                    out.print(controller.updateUserDetail(username,email,profilePicture,countryCode,cityCode));
+                    try {
+                        JSONObject result = (controller.updateUserDetail(username, email, countryCode, cityCode));
+                        logger.info(LoggerFactory.RESPONSE + result);
+                        out.print(result);
+                    }catch (Exception ignored){
+                        out.print(ResponseController.createSuccessJSON().put(ResponseController.CONTENT,Database.getInstance().getUserEntityHashMap().get(email).toUserDetailJSON()));
+                    }
+
                 }else {
                     //register
-                    out.print(controller.register(username, password, email, telephone,
+                    JSONObject result = (controller.register(username, password, email, telephone,
                             profilePicture, countryCode, cityCode, joinDate));
+                    logger.info(LoggerFactory.RESPONSE + result);
+                    out.print(result);
                 }
             } else {
                 out.print(resultCheckerJSON);
             }
         }catch (Exception ex){
+            logger.error(ex.getStackTrace());
             out.print(ResponseController.createErrorJSON(ex.getMessage()));
         }
     }

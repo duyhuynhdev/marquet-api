@@ -10,7 +10,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -80,41 +81,21 @@ public class ActivityDao {
                     .createCriteria(ActivityEntity.class).list();
             for (ActivityEntity obj : list) {
                 database.getActivityEntityHashMap().put(obj.getId(), obj);
-                // put activity to : 1/ +person 2/ -person 3/ follower of +person
-                //+person
-                //-----check exist user
-                UserEntity userActive = database.getUserEntityHashMap().get(obj.getSubjectEmail());
-                if(userActive!=null){
-                    List<Long> activityList = database.getActivityRFEmail().get(userActive.getEmail());
-                    if(activityList==null)
-                        activityList = new ArrayList<>();
+                UserEntity users = database.getUserEntityHashMap().get(obj.getOwnerEmail());
+                if (users != null) {
+                    HashSet<Long> activityList = database.getActivityRFEmail().get(users.getEmail());
+                    if (activityList == null)
+                        activityList = new HashSet<>();
                     activityList.add(obj.getId());
-                    database.getActivityRFEmail().put(userActive.getEmail(),activityList);
-                    //--follower of +person ( just do with upload activity)
-                    if(obj.getAction().equals(ActivityUtil.LABEL_UPLOAD_ACTION)) {
-                        List<String> followerList = database.getFollowerRF().get(userActive.getEmail());
-                        if (followerList != null) {
-                            for (String u : followerList) {
-                                List<Long> activityFollowerList = database.getActivityRFEmail().get(u);
-                                if (activityFollowerList == null)
-                                    activityFollowerList = new ArrayList<>();
-                                activityFollowerList.add(obj.getId());
-                                database.getActivityRFEmail().put(u, activityFollowerList);
-                            }
-                        }
+                    database.getActivityRFEmail().put(users.getEmail(), activityList);
+                    if (obj.getAction() == ActivityUtil.WATCHING_PRODUCT && obj.getRef() > 0) {
+                        HashMap<Long, Long> watchProductLog = database.getWatchingProductLogHashMap().get(users.getEmail());
+                        if (watchProductLog == null)
+                            watchProductLog = new HashMap<>();
+                        watchProductLog.put(obj.getRef(), obj.getId());
+                        database.getWatchingProductLogHashMap().put(users.getEmail(), watchProductLog);
                     }
                 }
-                //-person
-                //-----check exist user
-                UserEntity userPassive = database.getUserEntityHashMap().get(obj.getObjectEmail());
-                if(userPassive!=null){
-                    List<Long> activityList = database.getActivityRFEmail().get(userPassive.getEmail());
-                    if(activityList==null)
-                        activityList = new ArrayList<>();
-                    activityList.add(obj.getId());
-                    database.getActivityRFEmail().put(userPassive.getEmail(),activityList);
-                }
-
             }
             session.close();
         } catch (HibernateException ex) {

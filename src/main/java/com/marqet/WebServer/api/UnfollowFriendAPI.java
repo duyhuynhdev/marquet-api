@@ -6,9 +6,11 @@
 
 package com.marqet.WebServer.api;
 
-import com.marqet.WebServer.controller.FeedbackController;
+import com.marqet.WebServer.controller.FollowController;
 import com.marqet.WebServer.controller.ResponseController;
 import com.marqet.WebServer.util.ApiParameterChecker;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -20,7 +22,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 
-public class RequireFeedbackAPI extends HttpServlet {
+public class UnfollowFriendAPI extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -28,7 +31,7 @@ public class RequireFeedbackAPI extends HttpServlet {
      * @param request  raw request
      * @param response raw response
      * @throws ServletException if a raw-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException            if an I/O error occurs
      */
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -43,21 +46,24 @@ public class RequireFeedbackAPI extends HttpServlet {
                 jsonData.append(line);
             }
             JSONObject requestJSON = new JSONObject(jsonData.toString());
+            logger.info(LoggerFactory.REQUEST+requestJSON);
             // check enough parameter
-            String parameters = "buyerEmail,sellerEmail,productId";
+            String parameters = "email,beFollowedEmail";
             JSONObject resultCheckerJSON = ApiParameterChecker.check(requestJSON.keySet(), parameters);
             if (ResponseController.isSuccess(resultCheckerJSON)) {
                 //get parameter
-                String buyerEmail = requestJSON.getString("buyerEmail");
-                String sellerEmail = requestJSON.getString("sellerEmail");
-                long productId = requestJSON.getLong("productId");
-                FeedbackController controller = new FeedbackController();
-                //require feedback
-                out.print(controller.requiredFeedbackProduct(buyerEmail,sellerEmail,productId));
+                String email = requestJSON.getString("email");
+                String beFollowedEmail = requestJSON.getString("beFollowedEmail");
+                FollowController controller = new FollowController();
+                //unfollow
+                JSONObject result = (controller.unfollow(email,beFollowedEmail));
+                logger.info(LoggerFactory.RESPONSE + result);
+                out.print(result);
             } else {
                 out.print(resultCheckerJSON);
             }
-        } catch (Exception ex) {
+        }catch (Exception ex){
+            logger.error(ex.getStackTrace());
             out.print(ResponseController.createErrorJSON(ex.getMessage()));
         }
     }
@@ -70,7 +76,7 @@ public class RequireFeedbackAPI extends HttpServlet {
      * @param request  raw request
      * @param response raw response
      * @throws ServletException if a raw-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException            if an I/O error occurs
      */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
@@ -85,7 +91,7 @@ public class RequireFeedbackAPI extends HttpServlet {
      * @param request  raw request
      * @param response raw response
      * @throws ServletException if a raw-specific error occurs
-     * @throws IOException      if an I/O error occurs
+     * @throws IOException            if an I/O error occurs
      */
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)

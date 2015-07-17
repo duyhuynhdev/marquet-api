@@ -9,6 +9,8 @@ package com.marqet.WebServer.api;
 import com.marqet.WebServer.controller.FollowController;
 import com.marqet.WebServer.controller.ResponseController;
 import com.marqet.WebServer.util.ApiParameterChecker;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -21,6 +23,7 @@ import java.io.PrintWriter;
 
 
 public class FollowFriendAPI extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -43,6 +46,7 @@ public class FollowFriendAPI extends HttpServlet {
                 jsonData.append(line);
             }
             JSONObject requestJSON = new JSONObject(jsonData.toString());
+            logger.info(LoggerFactory.REQUEST+requestJSON);
             // check enough parameter
             String parameters = "email,beFollowedEmail";
             JSONObject resultCheckerJSON = ApiParameterChecker.check(requestJSON.keySet(), parameters);
@@ -52,11 +56,14 @@ public class FollowFriendAPI extends HttpServlet {
                 String beFollowedEmail = requestJSON.getString("beFollowedEmail");
                 FollowController controller = new FollowController();
                 //follow
-                out.print(controller.follow(email,beFollowedEmail));
+                JSONObject result = controller.follow(email,beFollowedEmail);
+                logger.info(LoggerFactory.RESPONSE + result);
+                out.print(result);
             } else {
                 out.print(resultCheckerJSON);
             }
         }catch (Exception ex){
+            logger.error(ex.getStackTrace());
             out.print(ResponseController.createErrorJSON(ex.getMessage()));
         }
     }

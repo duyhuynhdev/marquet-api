@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -20,7 +21,10 @@ public class CityController {
         try{
             JSONObject result = ResponseController.createSuccessJSON();
             JSONArray jsonArray = new JSONArray();
-            List<String> cityCodes = database.getCityRFbyCountryCode().get(countryCode);
+            List<String> cityCodes = new ArrayList<>();
+            try{
+                cityCodes = new ArrayList<>(database.getCityRFbyCountryCode().get(countryCode));
+            }catch (Exception ignored){}
             if(cityCodes!=null) {
                 for (String c : cityCodes) {
                     jsonArray.put(database.getCityEntityHashMap().get(c).toJSON());
@@ -55,9 +59,9 @@ public class CityController {
             if (database.getStateEntityHashMap().containsKey(city.getCode()))
                 return ResponseController.createFailJSON("City is exist\n");
             city.setCountryCode(countryCode);
-            List<String> listCityCode = database.getCityRFbyCountryCode().get(countryCode);
+            HashSet<String> listCityCode = database.getCityRFbyCountryCode().get(countryCode);
             if(listCityCode == null)
-                listCityCode = new ArrayList<>();
+                listCityCode = new HashSet<>();
             listCityCode.add(city.getCode());
             database.getCityRFbyCountryCode().put(countryCode,listCityCode);
             database.getCityEntityHashMap().put(city.getCode(), city);
@@ -79,9 +83,9 @@ public class CityController {
             database.getCityRFbyCountryCode().get(city.getCountryCode()).remove(cityCode);
             //add in new country
             city.setCountryCode(countryCode);
-            List<String> listCityCode = database.getCityRFbyCountryCode().get(countryCode);
+            HashSet<String> listCityCode = database.getCityRFbyCountryCode().get(countryCode);
             if(listCityCode == null)
-                listCityCode = new ArrayList<>();
+                listCityCode = new HashSet<>();
             listCityCode.add(cityCode);
             database.getCityRFbyCountryCode().put(countryCode,listCityCode);
             database.getCityEntityHashMap().put(city.getCode(), city);

@@ -8,7 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -75,9 +75,9 @@ public class SubCategoryDao {
             for (SubCategoryEntity obj : list) {
                 Database.getInstance().getSubCategoryEntityHashMap().put(obj.getId(), obj);
                 //put into SubCategoryRFbyCategoryId
-                List<Long> lstSubCategory = Database.getInstance().getSubCategoryRFbyCategoryId().get(obj.getCategoryId());
+                HashSet<Long> lstSubCategory = Database.getInstance().getSubCategoryRFbyCategoryId().get(obj.getCategoryId());
                 if(lstSubCategory==null){
-                    lstSubCategory = new ArrayList<>();
+                    lstSubCategory = new HashSet<>();
                 }
                 lstSubCategory.add(obj.getId());
                 Database.getInstance().getSubCategoryRFbyCategoryId().put(obj.getCategoryId(),lstSubCategory);

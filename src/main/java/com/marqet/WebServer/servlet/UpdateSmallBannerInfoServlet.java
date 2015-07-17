@@ -1,6 +1,8 @@
 package com.marqet.WebServer.servlet;
 
 import com.marqet.WebServer.controller.ElementController;
+import com.marqet.WebServer.controller.ResponseController;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -16,13 +18,27 @@ public class UpdateSmallBannerInfoServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         try{
-            long duration = Long.parseLong(request.getParameter("smallBannerDuration"));
+            int hour = Integer.parseInt(request.getParameter("smallBannerDuration"));
+            long duration = hour*60*60;
             long point = Long.parseLong(request.getParameter("smallBannerPoint"));
+            int num = Integer.parseInt(request.getParameter("smallBannerNum"));
             ElementController controller = new ElementController();
-            controller.changeSmallBannerInfo(point,duration);
-            response.sendRedirect("element-information.marqet");
+            JSONObject responseJSON = controller.changeSmallBannerInfo(point, duration,num);
+            if (responseJSON.get(ResponseController.RESULT).equals(ResponseController.SUCCESS))
+                response.sendRedirect("element-information.marqet");
+            else{
+                request.setAttribute("isError", true);
+                request.setAttribute("errorTitle", "Change small banner detail fail");
+                request.setAttribute("errorMessage",responseJSON.get(ResponseController.CONTENT));
+                request.getRequestDispatcher("element-information.marqet").forward(request,response);
+            }
+
         }catch (Exception ex){
             ex.printStackTrace();
+            request.setAttribute("isError", true);
+            request.setAttribute("errorTitle", "Change small banner detail exception");
+            request.setAttribute("errorMessage",ex.getMessage());
+            request.getRequestDispatcher("element-information.marqet").forward(request, response);
         }
     }
     @Override

@@ -9,6 +9,8 @@ package com.marqet.WebServer.api;
 import com.marqet.WebServer.controller.ProductController;
 import com.marqet.WebServer.controller.ResponseController;
 import com.marqet.WebServer.util.ApiParameterChecker;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -21,6 +23,7 @@ import java.io.PrintWriter;
 
 
 public class GetListProductByFilterAPI extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -43,6 +46,7 @@ public class GetListProductByFilterAPI extends HttpServlet {
                 jsonData.append(line);
             }
             JSONObject requestJSON = new JSONObject(jsonData.toString());
+            logger.info(LoggerFactory.REQUEST+requestJSON);
             // check enough parameter
             String parameters = "keySearch,typeSort,countryCode,minimumPrice,maximumPrice,subCategoryId";
             JSONObject resultCheckerJSON = ApiParameterChecker.check(requestJSON.keySet(), parameters);
@@ -50,7 +54,7 @@ public class GetListProductByFilterAPI extends HttpServlet {
                 //get parameter
                 String keySearch = requestJSON.getString("keySearch");
                 String typeSort = requestJSON.getString("typeSort");
-                String countryCode = requestJSON.getString("countryCode");
+//                String countryCode = requestJSON.getString("countryCode");
                 Double minimumPrice = requestJSON.getDouble("minimumPrice");
                 Double maximumPrice = requestJSON.getDouble("maximumPrice");
                 Long subCategoryId = requestJSON.getLong("subCategoryId");
@@ -59,11 +63,14 @@ public class GetListProductByFilterAPI extends HttpServlet {
                 int numProduct = requestJSON.getInt("numProduct");
                 ProductController controller = new ProductController();
                 //get List product
-                out.print(controller.getListProductByFilter(keySearch,typeSort,countryCode,minimumPrice,maximumPrice,subCategoryId,email,startIdx,numProduct));
+                JSONObject result = (controller.getListProductByFilter(keySearch,typeSort,minimumPrice,maximumPrice,subCategoryId,email,startIdx,numProduct));
+                logger.info(LoggerFactory.RESPONSE + result);
+                out.print(result);
             } else {
                 out.print(resultCheckerJSON);
             }
         }catch (Exception ex){
+            logger.error(ex.getStackTrace());
             out.print(ResponseController.createErrorJSON(ex.getMessage()));
         }
     }

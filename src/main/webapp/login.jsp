@@ -35,10 +35,27 @@
             <a href="register.jsp" class="text-center">Register a new membership</a>
         </div>
     </form>
+    <div class="modal fade" id="errorModal">
+        <div class="callout callout-danger">
+            <h4>Cannot login to MarQet Admin Pages%></h4>
+            <p>Please check your email and password</p>
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
 </div>
 
 <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js" type="text/javascript"></script>
-
+<script type="text/javascript">
+    <%
+    if(request.getParameter("isError")!=null && Boolean.getBoolean(request.getParameter("isError"))){
+       %>
+    $(window).load(function () {
+        $('#errorModal').modal('show');
+    });
+    <%
+    }
+    %>
+</script>
 </body>
 </html>

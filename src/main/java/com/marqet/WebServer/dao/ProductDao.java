@@ -9,8 +9,8 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -83,20 +83,20 @@ public class ProductDao {
                 //backup ProductRFCountryCode
                 HashMap<String, CityEntity> cityHashMap = database.getCityEntityHashMap();
                 String countryCode = cityHashMap.get(obj.getCityCode()).getCountryCode();
-                HashMap <Long,List<Long>> productFRSubCategory = database.getProductRFbyCountryCode().get(countryCode);
+                HashMap <Long,HashSet<Long>> productFRSubCategory = database.getProductRFbyCountryCode().get(countryCode);
                 if(productFRSubCategory==null)
                     productFRSubCategory = new HashMap<>();
-                List<Long> productList = productFRSubCategory.get(obj.getSubCategoryId());
+                HashSet<Long> productList = productFRSubCategory.get(obj.getSubCategoryId());
                 if (productList == null) {
-                    productList = new ArrayList<>();
+                    productList = new HashSet<>();
                 }
                 productList.add(obj.getId());
                 productFRSubCategory.put(obj.getSubCategoryId(),productList);
                 database.getProductRFbyCountryCode().put(countryCode, productFRSubCategory);
                 //backup ProductRFEmail
-                List<Long> productList2 = database.getProductRFbyEmail().get(obj.getEmail());
+                HashSet<Long> productList2 = database.getProductRFbyEmail().get(obj.getEmail());
                 if (productList2 == null) {
-                    productList2 = new ArrayList<>();
+                    productList2 = new HashSet<>();
                 }
                 productList2.add(obj.getId());
                 database.getProductRFbyEmail().put(obj.getEmail(), productList2);

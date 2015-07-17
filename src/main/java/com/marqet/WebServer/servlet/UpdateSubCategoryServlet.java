@@ -1,6 +1,8 @@
 package com.marqet.WebServer.servlet;
 
+import com.marqet.WebServer.controller.ResponseController;
 import com.marqet.WebServer.controller.SubCategoryController;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
@@ -15,30 +17,44 @@ import java.io.IOException;
  */
 @MultipartConfig
 public class UpdateSubCategoryServlet extends HttpServlet {
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)throws ServletException,IOException{
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-        try{
+        try {
             long id = Long.parseLong(request.getParameter("id"));
             long categoryId = Long.parseLong(request.getParameter("categoryId"));
             String name = request.getParameter("name");
             Part part = null;
             if (request.getContentType().startsWith("multipart/form-data")) {
-                part =request.getPart("coverImage");
+                part = request.getPart("coverImage");
             }
-             SubCategoryController controller = new SubCategoryController();
-             controller.editSubCategory(id, name, part,categoryId);
-             response.sendRedirect("subcategory.marqet?categoryId="+categoryId);
+            SubCategoryController controller = new SubCategoryController();
+            JSONObject responseJSON = controller.editSubCategory(id, name, part, categoryId);
+            if (responseJSON.get(ResponseController.RESULT).equals(ResponseController.SUCCESS))
+                response.sendRedirect("subcategory.marqet?categoryId=" + categoryId);
+            else{
+                request.setAttribute("isError", true);
+                request.setAttribute("errorTitle", "Update sub-category fail");
+                request.setAttribute("errorMessage",responseJSON.get(ResponseController.CONTENT));
+                request.getRequestDispatcher("subcategory.marqet?categoryId=" + categoryId).forward(request,response);
+            }
+
         }catch (Exception ex){
             ex.printStackTrace();
+            request.setAttribute("isError", true);
+            request.setAttribute("errorTitle", "Update sub-category exception");
+            request.setAttribute("errorMessage",ex.getMessage());
+            request.getRequestDispatcher("subcategory.marqet?categoryId=" + request.getParameter("categoryId")).forward(request, response);
         }
     }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        processRequest(request,response);
+        processRequest(request, response);
     }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        processRequest(request,response);
+        processRequest(request, response);
     }
 }

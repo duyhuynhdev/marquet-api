@@ -22,7 +22,7 @@ public class IdGenerator {
     private static long subMessageId = 0;
     private static Database database = Database.getInstance();
 
-    public static long getActivityId() {
+    public static synchronized long getActivityId() {
         Set<Long> idSet = database.getActivityEntityHashMap().keySet();
         do {
             activityId++;
@@ -31,7 +31,7 @@ public class IdGenerator {
         return activityId;
     }
 
-    public static long getBigBannerId() {
+    public static synchronized long getBigBannerId() {
         Set<Long> idSet = database.getBigBannerEntityHashMap().keySet();
         do {
             bigBannerId++;
@@ -40,7 +40,7 @@ public class IdGenerator {
         return bigBannerId;
     }
 
-    public static long getCategoryId() {
+    public static synchronized long getCategoryId() {
         Set<Long> idSet = database.getCategoryEntityHashMap().keySet();
         do {
             categoryId++;
@@ -49,7 +49,7 @@ public class IdGenerator {
         return categoryId;
     }
 
-    public static long getCommentId() {
+    public static synchronized long getCommentId() {
         Set<Long> idSet = database.getCommentEntityHashMap().keySet();
         do {
             commentId++;
@@ -58,7 +58,7 @@ public class IdGenerator {
         return commentId;
     }
 
-    public static long getFeedbackId() {
+    public static synchronized long getFeedbackId() {
         Set<Long> idSet = database.getFeedbackEntityHashMap().keySet();
         do {
             feedbackId++;
@@ -67,7 +67,7 @@ public class IdGenerator {
         return feedbackId;
     }
 
-    public static long getMessageId() {
+    public static synchronized long getMessageId() {
         Set<Long> idSet = database.getMessageEntityHashMap().keySet();
         do {
             messageId++;
@@ -76,7 +76,7 @@ public class IdGenerator {
         return messageId;
     }
 
-    public static long getProductId() {
+    public static synchronized long getProductId() {
         Set<Long> idSet = database.getProductEntityHashMap().keySet();
         do {
             productId++;
@@ -85,7 +85,7 @@ public class IdGenerator {
         return productId;
     }
 
-    public static long getSmallBannerId() {
+    public static synchronized long getSmallBannerId() {
         Set<Long> idSet = database.getSmallBannerEntityHashMap().keySet();
         do {
             smallBannerId++;
@@ -94,7 +94,7 @@ public class IdGenerator {
         return smallBannerId;
     }
 
-    public static long getSubCategoryId() {
+    public static synchronized long getSubCategoryId() {
         Set<Long> idSet = database.getSubCategoryEntityHashMap().keySet();
         do {
             subCategoryId++;
@@ -103,7 +103,7 @@ public class IdGenerator {
         return subCategoryId;
     }
 
-    public static long getFollowId() {
+    public static synchronized long getFollowId() {
         Set<Long> idSet = database.getFollowEntityList().keySet();
         do {
             followId++;
@@ -112,7 +112,7 @@ public class IdGenerator {
         return followId;
     }
 
-    public static long getOfferId() {
+    public static synchronized long getOfferId() {
         Set<Long> idSet = database.getOfferEntityHashMap().keySet();
         do {
             offerId++;
@@ -121,7 +121,7 @@ public class IdGenerator {
         return offerId;
     }
 
-    public static long getStuffLikedId() {
+    public static synchronized long getStuffLikedId() {
         Set<Long> idSet = database.getStuffLikedEntityHashMap().keySet();
         do {
             stuffLikedId++;
@@ -130,7 +130,7 @@ public class IdGenerator {
         return stuffLikedId;
     }
 
-    public static long getWatchListId() {
+    public static synchronized long getWatchListId() {
         Set<Long> idSet = database.getWatchListEntityHashMap().keySet();
         do {
             watchListId++;
@@ -139,7 +139,7 @@ public class IdGenerator {
         return watchListId;
     }
 
-    public static long getSubMessageId() {
+    public static synchronized long getSubMessageId() {
         Set<Long> idSet = database.getSubMessageEntityHashMap().keySet();
         do {
             subMessageId++;
@@ -148,7 +148,7 @@ public class IdGenerator {
         return subMessageId;
     }
 
-    public static String getCodeFromName(String name) {
+    public synchronized static String getCodeFromName(String name) {
         String temp [] = AccentRemoveAlgorithm.removeAccent(name).split(" ");
         String result ="";
         for(String t : temp){

@@ -24,7 +24,8 @@ public class Register extends HttpServlet {
             AccountController controller = new AccountController();
             if (controller.register(email, password, userName))
                 response.sendRedirect("login.jsp");
-            response.sendRedirect("register.jsp");
+            else
+            response.sendRedirect("register.jsp?isError=true");
         } catch (Exception ex) {
             ex.printStackTrace();
         }

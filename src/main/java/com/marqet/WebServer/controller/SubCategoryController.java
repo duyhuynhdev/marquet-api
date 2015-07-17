@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import javax.servlet.http.Part;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -22,7 +23,12 @@ public class SubCategoryController {
     public JSONObject getListSubCategoryByCategoryId(long categoryId) {
         JSONObject object = ResponseController.createSuccessJSON();
         JSONArray jsonArray = new JSONArray();
-        List<Long> lstSubCategory = database.getSubCategoryRFbyCategoryId().get(categoryId);
+        List<Long> lstSubCategory = new ArrayList<>();
+        try {
+             lstSubCategory = new ArrayList<>(database.getSubCategoryRFbyCategoryId().get(categoryId));
+        }catch (Exception ignore){
+
+        }
         if(lstSubCategory == null)
             return object.put(ResponseController.CONTENT, jsonArray);
         for (long id : lstSubCategory) {
@@ -47,14 +53,14 @@ public class SubCategoryController {
             subCategory.setId((int) id);
             String coverImagePath = "";
             if (imagePart != null && imagePart.getSize() > 0) {
-                coverImagePath = new UploadImageUtil().upload("category_" + id, Path.getUsersPath(), imagePart);
+                coverImagePath = new UploadImageUtil().upload("category_" + id, Path.getSubCategoriesPath(), imagePart);
             }
             subCategory.setCoverImg(coverImagePath);
             subCategory.setName(name);
             subCategory.setCategoryId(categoryId);
-            List<Long> listSubCategoryId = database.getSubCategoryRFbyCategoryId().get(categoryId);
+            HashSet<Long> listSubCategoryId = database.getSubCategoryRFbyCategoryId().get(categoryId);
             if(listSubCategoryId==null)
-                listSubCategoryId = new ArrayList<>();
+                listSubCategoryId = new HashSet<>();
             listSubCategoryId.add(id);
             database.getSubCategoryRFbyCategoryId().put(categoryId,listSubCategoryId);
             database.getSubCategoryEntityHashMap().put(id, subCategory);
@@ -80,9 +86,9 @@ public class SubCategoryController {
             database.getSubCategoryRFbyCategoryId().get(categoryId).remove(id);
             //add in new category
             subCategory.setCategoryId(categoryId);
-            List<Long> listSubCategoryId = database.getSubCategoryRFbyCategoryId().get(categoryId);
+            HashSet<Long> listSubCategoryId = database.getSubCategoryRFbyCategoryId().get(categoryId);
             if(listSubCategoryId==null)
-                listSubCategoryId = new ArrayList<>();
+                listSubCategoryId = new HashSet<>();
             listSubCategoryId.add(id);
             database.getSubCategoryRFbyCategoryId().put(categoryId,listSubCategoryId);
             database.getSubCategoryEntityHashMap().put(id, subCategory);

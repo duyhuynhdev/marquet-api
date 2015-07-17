@@ -17,30 +17,43 @@ import java.io.IOException;
  */
 @MultipartConfig
 public class AddSubCategoryServlet extends HttpServlet {
-    protected void processRequest(HttpServletRequest request, HttpServletResponse response)throws ServletException,IOException{
+    protected void processRequest(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
-        try{
+        try {
             String name = request.getParameter("name");
             long categoryId = Long.parseLong(request.getParameter("categoryId"));
             Part part = null;
             if (request.getContentType().startsWith("multipart/form-data")) {
-                part =request.getPart("coverImage");
+                part = request.getPart("coverImage");
             }
-             SubCategoryController controller = new SubCategoryController();
-            JSONObject responseJSON = controller.addSubCategory(name,part,categoryId);
-            if(responseJSON.get(ResponseController.RESULT).equals(ResponseController.SUCCESS))
-                 response.sendRedirect("subcategory.marqet?categoryId="+categoryId);
+            SubCategoryController controller = new SubCategoryController();
+            JSONObject responseJSON = controller.addSubCategory(name, part, categoryId);
+            if (responseJSON.get(ResponseController.RESULT).equals(ResponseController.SUCCESS))
+                response.sendRedirect("subcategory.marqet?categoryId=" + categoryId);
+            else{
+                request.setAttribute("isError", true);
+                request.setAttribute("errorTitle", "Add sub-category fail");
+                request.setAttribute("errorMessage",responseJSON.get(ResponseController.CONTENT));
+                request.getRequestDispatcher("subcategory.marqet?categoryId=" + categoryId).forward(request,response);
+            }
+
         }catch (Exception ex){
             ex.printStackTrace();
+            request.setAttribute("isError", true);
+            request.setAttribute("errorTitle", "Add sub-category exception");
+            request.setAttribute("errorMessage",ex.getMessage());
+            request.getRequestDispatcher("subcategory.marqet?categoryId=" + request.getParameter("categoryId")).forward(request, response);
         }
     }
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        processRequest(request,response);
+        processRequest(request, response);
     }
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        processRequest(request,response);
+        processRequest(request, response);
     }
 }

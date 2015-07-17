@@ -9,6 +9,8 @@ package com.marqet.WebServer.api;
 import com.marqet.WebServer.controller.CityController;
 import com.marqet.WebServer.controller.CountryController;
 import com.marqet.WebServer.controller.ResponseController;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -20,6 +22,7 @@ import java.io.PrintWriter;
 
 
 public class GetListCountryAndCityAPI extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -34,12 +37,15 @@ public class GetListCountryAndCityAPI extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
+        logger.info(LoggerFactory.REQUEST+"{}");
         CountryController controller = new CountryController();
         CityController controller2 = new CityController();
         JSONObject result = new JSONObject();
         result.put("countryList",controller.getListCountry().get(ResponseController.CONTENT));
         result.put("cityList",controller2.getListCity().get(ResponseController.CONTENT));
-        out.print(ResponseController.createSuccessJSON().put(ResponseController.CONTENT,result));
+        result = ResponseController.createSuccessJSON().put(ResponseController.CONTENT, result);
+        logger.info(LoggerFactory.RESPONSE + result);
+        out.print(result);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

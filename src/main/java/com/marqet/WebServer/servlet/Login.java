@@ -23,7 +23,7 @@ public class Login extends HttpServlet {
             AccountController controller = new AccountController();
             if (controller.login(email, password))
                 response.sendRedirect("element-information.marqet");
-            response.sendRedirect("login.jsp");
+            response.sendRedirect("login.jsp?isError=true");
         } catch (Exception ex) {
             ex.printStackTrace();
         }

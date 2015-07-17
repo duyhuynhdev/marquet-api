@@ -20,6 +20,9 @@
         <property name="senderEmail">
             <column name="senderEmail" sql-type="varchar" length="100" not-null="true"/>
         </property>
+        <property name="receiverEmail">
+            <column name="receiverEmail" sql-type="varchar" length="100" not-null="true"/>
+        </property>
         <property name="ref">
             <column name="ref" sql-type="bigint" not-null="true"/>
         </property>

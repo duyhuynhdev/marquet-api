@@ -27,7 +27,7 @@
             <column name="point" sql-type="bigint" not-null="true"/>
         </property>
         <property name="broadcastId">
-            <column name="broadcastId" sql-type="varchar" length="100" not-null="true"/>
+            <column name="broadcastId" sql-type="varchar" length="65535" not-null="true"/>
         </property>
         <property name="countryCode">
             <column name="countryCode" sql-type="varchar" length="10" not-null="true"/>
@@ -37,6 +37,33 @@
         </property>
         <property name="stateCode">
             <column name="stateCode" sql-type="varchar" length="10" not-null="true"/>
+        </property>
+        <property name="birthday">
+            <column name="birthday" sql-type="bigint" not-null="true"/>
+        </property>
+        <property name="gender">
+            <column name="gender" sql-type="int" not-null="true"/>
+        </property>
+        <property name="bio">
+            <column name="bio" sql-type="varchar" length="100" not-null="true"/>
+        </property>
+        <property name="website">
+            <column name="website" sql-type="varchar" length="100" not-null="true"/>
+        </property>
+        <property name="lastname">
+            <column name="lastname" sql-type="varchar" length="100" not-null="true"/>
+        </property>
+        <property name="firstname">
+            <column name="firstname" sql-type="varchar" length="100" not-null="true"/>
+        </property>
+        <property name="facebookId">
+            <column name="facebookId" sql-type="varchar" length="1000" not-null="true"/>
+        </property>
+        <property name="googleId">
+            <column name="googleId" sql-type="varchar" length="100" not-null="true"/>
+        </property>
+        <property name="twitterId">
+            <column name="twitterId" sql-type="varchar" length="100" not-null="true"/>
         </property>
     </class>
 </hibernate-mapping>

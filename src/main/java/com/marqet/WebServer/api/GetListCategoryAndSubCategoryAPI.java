@@ -9,6 +9,8 @@ package com.marqet.WebServer.api;
 import com.marqet.WebServer.controller.CategoryController;
 import com.marqet.WebServer.controller.ResponseController;
 import com.marqet.WebServer.controller.SubCategoryController;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -20,6 +22,7 @@ import java.io.PrintWriter;
 
 
 public class GetListCategoryAndSubCategoryAPI extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -39,7 +42,9 @@ public class GetListCategoryAndSubCategoryAPI extends HttpServlet {
         JSONObject result = new JSONObject();
         result.put("categoryList", controller.getListCategory().get(ResponseController.CONTENT));
         result.put("subCategoryList", controller2.getListSubCategory().get(ResponseController.CONTENT));
-        out.print(ResponseController.createSuccessJSON().put(ResponseController.CONTENT,result));
+        result = ResponseController.createSuccessJSON().put(ResponseController.CONTENT,result);
+        logger.info(LoggerFactory.RESPONSE + result);
+        out.print(result);
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">

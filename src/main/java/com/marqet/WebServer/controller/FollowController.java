@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -20,18 +21,15 @@ public class FollowController {
     public JSONObject getListFollower(String emailMe, String emailView, int startIdx, int numUser) {
         try {
             JSONObject result = ResponseController.createSuccessJSON();
-            List<String> followers = database.getFollowerRF().get(emailView);
-            List<String> followings = database.getFollowingRF().get(emailMe);
+            List<String> followers = new ArrayList<>();
+            List<String> followings = new ArrayList<>();
+            try{
+                followers = new ArrayList<>(database.getFollowerRF().get(emailView));
+                followings = new ArrayList<>(database.getFollowingRF().get(emailMe));
+            }catch (Exception ignored){}
             JSONArray followerList = new JSONArray();
             if (followers == null) {
-                if (TempData.isTemp) {
-                    followers = TempData.tempFollow(emailView);
-                    if (followers.size() > 3)
-                        followings = followers.subList(0, 3);
-                } else {
-                    return result.put(ResponseController.CONTENT, followerList);
-                }
-
+                return result.put(ResponseController.CONTENT, followerList);
             }
             int endIdx = startIdx + numUser;
             if (endIdx > followers.size() - 1)
@@ -65,19 +63,13 @@ public class FollowController {
     public JSONObject getListFollowing(String emailMe, String emailView, int startIdx, int numUser) {
         try {
             JSONObject result = ResponseController.createSuccessJSON();
-            List<String> followings = database.getFollowingRF().get(emailView);
-            List<String> followingsMe = database.getFollowingRF().get(emailMe);
+            List<String> followings = new ArrayList<>();
+            List<String> followingsMe = new ArrayList<>();
+            try{
+                followingsMe = new ArrayList<>(database.getFollowingRF().get(emailMe));
+                followings = new ArrayList<>(database.getFollowingRF().get(emailView));
+            }catch (Exception ignored){}
             JSONArray followingList = new JSONArray();
-            if (followings == null) {
-                if (TempData.isTemp) {
-                    followings = TempData.tempFollow(emailView);
-                    if (followings.size() > 3)
-                        followingsMe = TempData.tempFollow(emailMe).subList(0, 3);
-                } else {
-                    return result.put(ResponseController.CONTENT, followingList);
-                }
-
-            }
             int endIdx = startIdx + numUser;
             if (endIdx > followings.size() - 1)
                 endIdx = followings.size();
@@ -119,24 +111,59 @@ public class FollowController {
             //put to followMapIdRF;
             database.getFollowMapIdRF().put(follow.getFollower() + "#" + follow.getBeFollower(), follow.getId());
             //put to followerRF
-            List<String> followers = database.getFollowerRF().get(follow.getBeFollower());
+            HashSet<String> followers = database.getFollowerRF().get(follow.getBeFollower());
             if (followers == null)
-                followers = new ArrayList<>();
+                followers = new HashSet<>();
             followers.add(follow.getFollower());
             database.getFollowerRF().put(follow.getBeFollower(), followers);
             //put to followingRF
-            List<String> beFollowers = database.getFollowingRF().get(follow.getFollower());
+            HashSet<String> beFollowers = database.getFollowingRF().get(follow.getFollower());
             if (beFollowers == null)
-                beFollowers = new ArrayList<>();
+                beFollowers = new HashSet<>();
             beFollowers.add(follow.getBeFollower());
             database.getFollowingRF().put(follow.getFollower(), beFollowers);
             if (dao.insert(follow)) {
                 responseJSON = ResponseController.createSuccessJSON();
+                new ActivityController().insertActivity(email, beFollowedEmail, ActivityUtil.FOLLOWING, follow.getId());
             } else {
                 responseJSON = ResponseController.createFailJSON("Cannot insert to database\n");
             }
+            return responseJSON;
+        } catch (Exception ex) {
+            return ResponseController.createErrorJSON(ex.getMessage());
+        }
+    }
+
+    public JSONObject unfollow(String email, String beFollowedEmail) {
+        try {
+            long followId = database.getFollowMapIdRF().get(email + "#" + beFollowedEmail);
+            JSONObject responseJSON;
+            if (database.getFollowEntityList().get(followId) == null) {
+                return ResponseController.createSuccessJSON();
+            }
+            FollowEntity follow = new FollowEntity(database.getFollowEntityList().get(followId));
+            database.getFollowEntityList().remove(followId);
+            //rm to followMapIdRF;
+            database.getFollowMapIdRF().remove(email + "#" + beFollowedEmail);
+            //rm to followerRF
+            HashSet<String> followers = database.getFollowerRF().get(follow.getBeFollower());
+            if (followers != null) {
+                followers.remove(follow.getFollower());
+                database.getFollowerRF().put(follow.getBeFollower(), followers);
+            }
+            //rm to followingRF
+            HashSet<String> beFollowers = database.getFollowingRF().get(follow.getFollower());
+            if (beFollowers != null) {
+                beFollowers.remove(follow.getBeFollower());
+                database.getFollowingRF().put(follow.getFollower(), beFollowers);
+            }
+            if (dao.delete(follow)) {
+                responseJSON = ResponseController.createSuccessJSON();
+            } else {
+                responseJSON = ResponseController.createFailJSON("Cannot delete from database\n");
+            }
             // insert Activity
-            new ActivityController().insertActivity(ActivityUtil.LABEL_FOLLOWING_ACTION, email, "", beFollowedEmail);
+            //new ActivityController().insertActivity(ActivityUtil.LABEL_FOLLOWING_ACTION, email, "", beFollowedEmail);
             return responseJSON;
         } catch (Exception ex) {
             return ResponseController.createErrorJSON(ex.getMessage());

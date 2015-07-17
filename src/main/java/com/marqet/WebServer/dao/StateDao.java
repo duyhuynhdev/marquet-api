@@ -8,7 +8,7 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -75,9 +75,9 @@ public class StateDao {
             for (StateEntity obj : list) {
                 Database.getInstance().getStateEntityHashMap().put(obj.getCode(), obj);
                 //put into cityRFcountryCode
-                List<String> stateList = Database.getInstance().getStateRFbyCountryCode().get(obj.getCountryCode());
+                HashSet<String> stateList = Database.getInstance().getStateRFbyCountryCode().get(obj.getCountryCode());
                 if(stateList==null){
-                    stateList = new ArrayList<>();
+                    stateList = new HashSet<>();
                 }
                 stateList.add(obj.getCode());
                 Database.getInstance().getStateRFbyCountryCode().put(obj.getCountryCode(),stateList);

@@ -6,10 +6,11 @@
 
 package com.marqet.WebServer.api;
 
-import com.marqet.WebServer.controller.FeedbackController;
 import com.marqet.WebServer.controller.ResponseController;
-import com.marqet.WebServer.controller.SubMessageController;
+import com.marqet.WebServer.controller.SmallBannerController;
 import com.marqet.WebServer.util.ApiParameterChecker;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -21,7 +22,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 
-public class GetListSubMessageAPI extends HttpServlet {
+public class GetListWaitingSmallBannerAPI extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -44,32 +46,23 @@ public class GetListSubMessageAPI extends HttpServlet {
                 jsonData.append(line);
             }
             JSONObject requestJSON = new JSONObject(jsonData.toString());
+            logger.info(LoggerFactory.REQUEST+requestJSON);
             // check enough parameter
             String parameters = "email";
             JSONObject resultCheckerJSON = ApiParameterChecker.check(requestJSON.keySet(), parameters);
             if (ResponseController.isSuccess(resultCheckerJSON)) {
                 //get parameter
                 String email = requestJSON.getString("email");
-                int startIdx = requestJSON.getInt("startIdx");
-                int numSubMessage = requestJSON.getInt("numSubMessage");
-                long messageId = requestJSON.getInt("messageId");
-                int type = requestJSON.getInt("type");
-                switch (type) {
-                    case 1:
-                    case 2:
-                        SubMessageController subMessageController = new SubMessageController();
-                        out.print(subMessageController.getSubMessageByMessageId(email,messageId, startIdx, numSubMessage));
-                        break;
-                    case 3:
-                        FeedbackController feedbackController = new FeedbackController();
-                        out.print(feedbackController.getListFeedbackRequired(email,startIdx,numSubMessage));
-
-                }
+                SmallBannerController smallBannerController = new SmallBannerController();
+                JSONObject result = (smallBannerController.getListWaitingSmallBanner(email));
+                logger.info(LoggerFactory.RESPONSE + result);
+                out.print(result);
 
             } else {
                 out.print(resultCheckerJSON);
             }
         }catch (Exception ex){
+            logger.error(ex.getStackTrace());
             out.print(ResponseController.createErrorJSON(ex.getMessage()));
         }
     }

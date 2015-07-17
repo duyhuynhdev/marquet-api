@@ -16,9 +16,11 @@ public class GetCategoryServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         try{
+
             CategoryController controller = new CategoryController();
-            request.setAttribute("categoryList",controller.getListCategory());
+            request.setAttribute("categoryList", controller.getListCategory());
             request.getRequestDispatcher("category.jsp").forward(request,response);
+
         }catch (Exception ex){
             ex.printStackTrace();
         }

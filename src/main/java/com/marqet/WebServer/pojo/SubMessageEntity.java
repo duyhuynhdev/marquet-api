@@ -1,5 +1,7 @@
 package com.marqet.WebServer.pojo;
 
+import com.marqet.WebServer.controller.UserController;
+import com.marqet.WebServer.util.Database;
 import org.json.JSONObject;
 
 import javax.persistence.*;
@@ -15,6 +17,7 @@ public class SubMessageEntity {
     private String content;
     private long date;
     private String senderEmail;
+    private String receiverEmail;
     private long ref;
     private int type;
     private int status;
@@ -28,6 +31,10 @@ public class SubMessageEntity {
         this.content = s.content;
         this.date = s.date;
         this.senderEmail = s.senderEmail;
+        this.receiverEmail = s.receiverEmail;
+        this.ref = s.ref;
+        this.type = s.type;
+        this.status = s.status;
     }
 
     @Id
@@ -78,6 +85,18 @@ public class SubMessageEntity {
 
     public void setSenderEmail(String senderEmail) {
         this.senderEmail = senderEmail;
+    }
+
+
+    @Basic
+    @Column(name = "receiverEmail", nullable = false, insertable = true, updatable = true, length = 100)
+
+    public String getReceiverEmail() {
+        return receiverEmail;
+    }
+
+    public void setReceiverEmail(String receiverEmail) {
+        this.receiverEmail = receiverEmail;
     }
 
     @Basic
@@ -149,16 +168,30 @@ public class SubMessageEntity {
         return jsonObject;
     }
 
-    public JSONObject toDetailJSON() {
+    public JSONObject toDetailJSON(int idx, long tempSubMessageId) {
+        UserEntity sender = Database.getInstance().getUserEntityHashMap().get(this.getSenderEmail());
+        MessageEntity messageEntity = Database.getInstance().getMessageEntityHashMap().get(messageId);
+        int currentStep = 1;
+        if(messageEntity != null){
+            currentStep = messageEntity.getStatus();
+        }
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("id", this.id);
         jsonObject.put("messageId", this.messageId);
         jsonObject.put("content", this.content);
         jsonObject.put("date", this.date);
         jsonObject.put("senderEmail", this.senderEmail);
+        if (sender == null) {
+            sender = new UserEntity(new UserController().anonymous);
+        }
+        jsonObject.put("senderAvatar", sender.getProfilePicture());
         jsonObject.put("ref", this.ref);
         jsonObject.put("type", this.type);
         jsonObject.put("status", this.status);
+        jsonObject.put("idx", idx);
+        jsonObject.put("tempSubMessageId", tempSubMessageId);
+        jsonObject.put("receiverEmail", receiverEmail);
+        jsonObject.put("currentStep", currentStep);
         return jsonObject;
     }
 }

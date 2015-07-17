@@ -4,14 +4,12 @@ package com.marqet.WebServer.util;
  * Created by hpduy17 on 4/1/15.
  */
 public class ActivityUtil {
-    public static final String LABEL_UPLOAD_ACTION ="upload";
-    public static final String LABEL_GOT_POINT_ACTION ="got_point";
-    public static final String LABEL_FOLLOWING_ACTION ="following";
-    public static final String LABEL_WATCHING_ACTION ="watching";
-    public static final String LABEL_INVITES_ACTION ="invites";
-    public static String ACTIVITY_UPLOAD_PRODUCT ="has uploaded #number products";
-    public static String ACTIVITY_FOLLOWING ="are following";
-    public static String ACTIVITY_GOT_POINT="got #number Qet Points from";
-    public static String ACTIVITY_WATCHING_PRODUCT ="watching your product";
-    public static String ACTIVITY_INVITES =" invites you from his page";
+    public static final int UPLOAD_PRODUCT = 1;
+    public static final int GOT_POINT = 2;
+    public static final int FOLLOWING = 3;
+    public static final int WATCHING_PRODUCT = 4;
+    public static final int LIKE_PRODUCT = 5;
+    public static final int COMMENT_PRODUCT = 6;
+    public static final int SEND_MESSAGE = 7;
+    public static final int WATCHLIST = 8;
 }

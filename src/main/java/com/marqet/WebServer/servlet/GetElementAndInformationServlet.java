@@ -20,7 +20,7 @@ public class GetElementAndInformationServlet extends HttpServlet {
         try{
             Database database = Database.getInstance();
             request.setAttribute("element",new ElementController().getElement());
-            request.setAttribute("information",new InformationController().getInformation());
+            request.setAttribute("information",new InformationController().getInformation(-1));
             request.getRequestDispatcher("element-information.jsp").forward(request,response);
         }catch (Exception ex){
             ex.printStackTrace();

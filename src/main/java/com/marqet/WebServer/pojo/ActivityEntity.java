@@ -1,34 +1,38 @@
 package com.marqet.WebServer.pojo;
 
+import com.marqet.WebServer.controller.UserController;
+import com.marqet.WebServer.util.Database;
 import org.json.JSONObject;
 
 import javax.persistence.*;
 
 /**
- * Created by hpduy17 on 3/16/15.
+ * Created by hpduy17 on 5/29/15.
  */
 @Entity
 @Table(name = "Activity", schema = "", catalog = "marqet")
 public class ActivityEntity {
     private long id;
     private long date;
-    private String action;
-    private String object;
+    private int action;
     private String subjectEmail;
-    private byte isRead;
+    private int isRead;
     private String objectEmail;
+    private String ownerEmail;
+    private long ref;
 
     public ActivityEntity() {
     }
 
-    public ActivityEntity(ActivityEntity a) {
-        this.id = a.id;
-        this.date = a.date;
-        this.action = a.action;
-        this.object = a.object;
-        this.subjectEmail = a.subjectEmail;
-        this.isRead = a.isRead;
-        this.objectEmail = a.objectEmail;
+    public ActivityEntity(ActivityEntity that) {
+        this.id = that.id;
+        this.date = that.date;
+        this.action = that.action;
+        this.subjectEmail = that.subjectEmail;
+        this.isRead = that.isRead;
+        this.objectEmail = that.objectEmail;
+        this.ownerEmail = that.ownerEmail;
+        this.ref = that.ref;
     }
 
     @Id
@@ -52,23 +56,13 @@ public class ActivityEntity {
     }
 
     @Basic
-    @Column(name = "action", nullable = false, insertable = true, updatable = true, length = 100)
-    public String getAction() {
+    @Column(name = "action", nullable = false, insertable = true, updatable = true)
+    public int getAction() {
         return action;
     }
 
-    public void setAction(String action) {
+    public void setAction(int action) {
         this.action = action;
-    }
-
-    @Basic
-    @Column(name = "object", nullable = false, insertable = true, updatable = true, length = 100)
-    public String getObject() {
-        return object;
-    }
-
-    public void setObject(String object) {
-        this.object = object;
     }
 
     @Basic
@@ -80,6 +74,17 @@ public class ActivityEntity {
     public void setSubjectEmail(String subjectEmail) {
         this.subjectEmail = subjectEmail;
     }
+
+    @Basic
+    @Column(name = "isRead", nullable = false, insertable = true, updatable = true)
+    public int getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(int isRead) {
+        this.isRead = isRead;
+    }
+
     @Basic
     @Column(name = "objectEmail", nullable = false, insertable = true, updatable = true, length = 100)
     public String getObjectEmail() {
@@ -89,14 +94,25 @@ public class ActivityEntity {
     public void setObjectEmail(String objectEmail) {
         this.objectEmail = objectEmail;
     }
+
     @Basic
-    @Column(name = "isRead", nullable = false, insertable = true, updatable = true)
-    public byte getIsRead() {
-        return isRead;
+    @Column(name = "ownerEmail", nullable = false, insertable = true, updatable = true, length = 100)
+    public String getOwnerEmail() {
+        return ownerEmail;
     }
 
-    public void setIsRead(byte isRead) {
-        this.isRead = isRead;
+    public void setOwnerEmail(String ownerEmail) {
+        this.ownerEmail = ownerEmail;
+    }
+
+    @Basic
+    @Column(name = "ref", nullable = false, insertable = true, updatable = true)
+    public long getRef() {
+        return ref;
+    }
+
+    public void setRef(long ref) {
+        this.ref = ref;
     }
 
     @Override
@@ -106,12 +122,14 @@ public class ActivityEntity {
 
         ActivityEntity that = (ActivityEntity) o;
 
-        if (date != that.date) return false;
         if (id != that.id) return false;
-        if (action != null ? !action.equals(that.action) : that.action != null) return false;
-        if (object != null ? !object.equals(that.object) : that.object != null) return false;
+        if (date != that.date) return false;
+        if (action != that.action) return false;
+        if (isRead != that.isRead) return false;
+        if (ref != that.ref) return false;
         if (subjectEmail != null ? !subjectEmail.equals(that.subjectEmail) : that.subjectEmail != null) return false;
         if (objectEmail != null ? !objectEmail.equals(that.objectEmail) : that.objectEmail != null) return false;
+        if (ownerEmail != null ? !ownerEmail.equals(that.ownerEmail) : that.ownerEmail != null) return false;
 
         return true;
     }
@@ -120,22 +138,50 @@ public class ActivityEntity {
     public int hashCode() {
         int result = (int) (id ^ (id >>> 32));
         result = 31 * result + (int) (date ^ (date >>> 32));
-        result = 31 * result + (action != null ? action.hashCode() : 0);
-        result = 31 * result + (object != null ? object.hashCode() : 0);
+        result = 31 * result + (int) (ref ^ (ref >>> 32));
+        result = 31 * result + action;
         result = 31 * result + (subjectEmail != null ? subjectEmail.hashCode() : 0);
+        result = 31 * result + isRead;
         result = 31 * result + (objectEmail != null ? objectEmail.hashCode() : 0);
+        result = 31 * result + (ownerEmail != null ? ownerEmail.hashCode() : 0);
+
         return result;
     }
 
     public JSONObject toJSON(){
         JSONObject jsonObject = new JSONObject();
-        jsonObject.put("id",this.id);
-        jsonObject.put("action",this.action);
-        jsonObject.put("object",this.object);
-        jsonObject.put("subjectEmail",this.subjectEmail);
-        jsonObject.put("objectEmail",this.objectEmail);
+        jsonObject.put("id",id);
+        jsonObject.put("date",date);
+        jsonObject.put("action",action);
+        jsonObject.put("isRead",isRead);
+        jsonObject.put("ref",ref);
+        jsonObject.put("subjectEmail",subjectEmail);
+        jsonObject.put("objectEmail",objectEmail);
+        jsonObject.put("ownerEmail",ownerEmail);
         return jsonObject;
     }
 
-
+    public JSONObject toDetailJSON(){
+        Database database = Database.getInstance();
+        UserEntity subUser = database.getUserEntityHashMap().get(subjectEmail);
+        UserEntity objUser = database.getUserEntityHashMap().get(objectEmail);
+        if(subUser == null){
+            subUser = new UserEntity(new UserController().getAnonymous());
+        }
+        if(objUser == null){
+            objUser = new UserEntity(new UserController().getAnonymous());
+        }
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("id",id);
+        jsonObject.put("date",date);
+        jsonObject.put("action",action);
+        jsonObject.put("ref",ref);
+        jsonObject.put("subjectEmail",subjectEmail);
+        jsonObject.put("subjectName",subUser.getUserName());
+        jsonObject.put("subjectAvatar",subUser.getProfilePicture());
+        jsonObject.put("objectEmail",objectEmail);
+        jsonObject.put("objectName",objUser.getUserName());
+        jsonObject.put("objectAvatar",objUser.getProfilePicture());
+        return jsonObject;
+    }
 }

@@ -35,5 +35,8 @@
         <property name="subCategoryId">
             <column name="subCategoryId" sql-type="bigint" not-null="true"/>
         </property>
+        <property name="productVideo">
+            <column name="productVideo" sql-type="text" length="65535" not-null="true"/>
+        </property>
     </class>
 </hibernate-mapping>

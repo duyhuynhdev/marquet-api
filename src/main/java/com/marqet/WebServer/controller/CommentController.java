@@ -2,16 +2,15 @@ package com.marqet.WebServer.controller;
 
 import com.marqet.WebServer.dao.CommentDao;
 import com.marqet.WebServer.pojo.CommentEntity;
+import com.marqet.WebServer.pojo.ProductEntity;
+import com.marqet.WebServer.util.ActivityUtil;
 import com.marqet.WebServer.util.Database;
 import com.marqet.WebServer.util.DateTimeUtil;
 import com.marqet.WebServer.util.IdGenerator;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by hpduy17 on 3/22/15.
@@ -24,7 +23,10 @@ public class CommentController {
         try {
             JSONObject object = ResponseController.createSuccessJSON();
             JSONArray jsonArray = new JSONArray();
-            List<Long> lstComment = database.getCommentRFbyProductId().get(productId);
+            List<Long> lstComment = new ArrayList<>();
+            try{
+                lstComment = new ArrayList<>(database.getCommentRFbyProductId().get(productId));
+            }catch (Exception ignored){}
             for (long id : lstComment) {
                 jsonArray.put(database.getCommentEntityHashMap().get(id).toCommentDetailJSON());
             }
@@ -38,7 +40,10 @@ public class CommentController {
         try {
             JSONObject object = ResponseController.createSuccessJSON();
             JSONArray jsonArray = new JSONArray();
-            List<Long> lstComment = database.getCommentRFbyProductId().get(productId);
+            List<Long> lstComment = new ArrayList<>();
+            try{
+                lstComment = new ArrayList<>(database.getCommentRFbyProductId().get(productId));
+            }catch (Exception ex){}
             if(lstComment == null) {
                 JSONObject result = new JSONObject();
                 result.put("commentList",jsonArray);
@@ -82,16 +87,21 @@ public class CommentController {
         comment.setProductId(productId);
         database.getCommentEntityHashMap().put(comment.getId(),comment);
         //put to commentRFProductId
-        List<Long> commentList = database.getCommentRFbyProductId().get(productId);
+        HashSet<Long> commentList = database.getCommentRFbyProductId().get(productId);
         if(commentList==null)
-            commentList = new ArrayList<>();
+            commentList = new HashSet<>();
         commentList.add(comment.getId());
         database.getCommentRFbyProductId().put(productId,commentList);
-        if (dao.insert(comment))
+        if (dao.insert(comment)) {
             responseJSON = ResponseController.createSuccessJSON();
+            try {
+                ProductEntity product = database.getProductEntityHashMap().get(productId);
+                new ActivityController().insertActivity(email, product.getEmail(), ActivityUtil.COMMENT_PRODUCT, productId);
+            } catch (Exception ignored) {
+            }
+        }
         else
             responseJSON = ResponseController.createFailJSON("Cannot insert to database\n");
         return responseJSON;
-
     }
 }

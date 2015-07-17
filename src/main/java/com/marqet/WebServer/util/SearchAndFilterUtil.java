@@ -46,7 +46,10 @@ public class SearchAndFilterUtil {
 
     public List<Long> filterProduct() {
         // get product by country
-        List<Long> productCandidates = database.getProductRFbyCountryCode().get(countryCode).get(subCategoryId);
+        List<Long> productCandidates = new ArrayList<>();
+        try{
+            productCandidates = new ArrayList<>(database.getProductRFbyCountryCode().get(countryCode).get(subCategoryId));
+        }catch (Exception ignored){}
         try {
             if (productCandidates != null) {
                 //get product by ket search
@@ -54,7 +57,7 @@ public class SearchAndFilterUtil {
                 //get product by price
                 productCandidates = getProductByPrice(productCandidates);
                 //sort product
-                if(typeSort.equals(POPULAR))
+                if(typeSort.toLowerCase().equals(POPULAR))
                     productCandidates = sortProductByPopular(productCandidates);
                 else
                     productCandidates = sortProductByLastest(productCandidates);
@@ -79,7 +82,7 @@ public class SearchAndFilterUtil {
     public List<Long> getProductByKeySearch(List<Long> productList) {
         for (long id : new ArrayList<>(productList)) {
             ProductEntity product = database.getProductEntityHashMap().get(id);
-            if (textSearch(keySearch, product.getName()) == keySearch.length())
+            if (textSearch(keySearch, product.getName()) == keySearch.split(" ").length)
                 productList.remove(id);
         }
         return productList;

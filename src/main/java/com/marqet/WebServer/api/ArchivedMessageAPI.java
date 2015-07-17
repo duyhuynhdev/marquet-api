@@ -6,9 +6,11 @@
 
 package com.marqet.WebServer.api;
 
-import com.marqet.WebServer.controller.FeedbackController;
+import com.marqet.WebServer.controller.MessageController;
 import com.marqet.WebServer.controller.ResponseController;
 import com.marqet.WebServer.util.ApiParameterChecker;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
 import org.json.JSONObject;
 
 import javax.servlet.ServletException;
@@ -20,7 +22,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 
-public class GetListFeedbackRequiredAPI extends HttpServlet {
+public class ArchivedMessageAPI extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -43,21 +46,24 @@ public class GetListFeedbackRequiredAPI extends HttpServlet {
                 jsonData.append(line);
             }
             JSONObject requestJSON = new JSONObject(jsonData.toString());
+            logger.info(LoggerFactory.REQUEST+requestJSON);
             // check enough parameter
-            String parameters = "email";
+            String parameters = "messageId,type";
             JSONObject resultCheckerJSON = ApiParameterChecker.check(requestJSON.keySet(), parameters);
             if (ResponseController.isSuccess(resultCheckerJSON)) {
                 //get parameter
-                String email = requestJSON.getString("email");
-                int startIdx = requestJSON.getInt("startIdx");
-                int numFeedback = requestJSON.getInt("numFeedback");
-                FeedbackController controller = new FeedbackController();
-                //get list follower
-                out.print(controller.getListFeedbackRequired(email, startIdx, numFeedback));
+                long messageId = requestJSON.getLong("messageId");
+                int type = requestJSON.getInt("type");
+                MessageController controller = new MessageController();
+                //archive product
+                JSONObject result = controller.archiveMessage(messageId,type);
+                out.print(result);
+                logger.info(LoggerFactory.RESPONSE + result);
             } else {
                 out.print(resultCheckerJSON);
             }
         }catch (Exception ex){
+            logger.error(ex.getStackTrace());
             out.print(ResponseController.createErrorJSON(ex.getMessage()));
         }
     }

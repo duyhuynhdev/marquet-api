@@ -8,7 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
 /**
  * Created by hpduy17 on 3/21/15.
@@ -73,7 +73,7 @@ public class CountryController {
             CountryEntity country = new CountryEntity(Database.getInstance().getCountryEntityHashMap().get(countryCode));
             database.getCountryEntityHashMap().remove(countryCode);
             //remove city in country
-            List<String> listCityCode = database.getCityRFbyCountryCode().get(countryCode);
+            HashSet<String> listCityCode = database.getCityRFbyCountryCode().get(countryCode);
             if(listCityCode!=null) {
                 for (String code : new ArrayList<>(listCityCode)) {
                     new CityController().deleteCity(code);
@@ -81,7 +81,7 @@ public class CountryController {
             }
             database.getCityRFbyCountryCode().remove(countryCode);
             // remove state in country
-            List<String> listStateCode = database.getStateRFbyCountryCode().get(countryCode);
+            HashSet<String> listStateCode = database.getStateRFbyCountryCode().get(countryCode);
             if(listStateCode!=null) {
                 for (String code : new ArrayList<>(listStateCode)) {
                     new StateController().deleteState(code);

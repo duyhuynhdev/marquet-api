@@ -7,16 +7,23 @@
 package com.marqet.WebServer.api;
 
 import com.marqet.WebServer.controller.InformationController;
+import com.marqet.WebServer.controller.ResponseController;
+import com.marqet.WebServer.util.ApiParameterChecker;
+import com.marqet.WebServer.util.LoggerFactory;
+import org.apache.log4j.Logger;
+import org.json.JSONObject;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
 
 
 public class GetInformationAPI extends HttpServlet {
+    private Logger logger = LoggerFactory.createLogger(this.getClass());
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -31,8 +38,33 @@ public class GetInformationAPI extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         response.setCharacterEncoding("UTF-8");
         PrintWriter out = response.getWriter();
-        InformationController controller = new InformationController();
-        out.print(controller.getInformation());
+        try {
+            StringBuffer jsonData = new StringBuffer();
+            String line;
+            BufferedReader reader = request.getReader();
+            while ((line = reader.readLine()) != null) {
+                jsonData.append(line);
+            }
+            JSONObject requestJSON = new JSONObject(jsonData.toString());
+            logger.info(LoggerFactory.REQUEST+requestJSON);
+            // check enough parameter
+            String parameters = "type";
+            JSONObject resultCheckerJSON = ApiParameterChecker.check(requestJSON.keySet(), parameters);
+            if (ResponseController.isSuccess(resultCheckerJSON)) {
+                //get parameter
+                int type = requestJSON.getInt("type");
+                InformationController controller = new InformationController();
+                JSONObject result = controller.getInformation(type);
+                logger.info(LoggerFactory.RESPONSE + result);
+                out.print(result);
+
+            } else {
+                out.print(resultCheckerJSON);
+            }
+        }catch (Exception ex){
+            logger.error(ex.getStackTrace());
+            out.print(ResponseController.createErrorJSON(ex.getMessage()));
+        }
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
