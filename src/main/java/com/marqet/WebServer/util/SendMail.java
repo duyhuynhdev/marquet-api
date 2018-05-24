@@ -31,7 +31,7 @@ public class SendMail {
 			@Override
 			public void run() {
 				Properties props = System.getProperties();
-				props.put("mail.smtp.host", "smtp.gmail.com");
+				props.put("mail.smtp.host", "smtp.googlemail.com");
 				props.put("mail.smtp.auth", "true");
 				props.put("mail.smtp.port", "465");
 				props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
@@ -48,7 +48,7 @@ public class SendMail {
 					mailMessage.setSubject(msgSubject);
 					mailMessage.setContent(msgBody, "text/html; charset=utf-8");
 		            Transport transport = mailSession.getTransport("smtp");
-		            transport.connect("smtp.gmail.com", username, password);
+		            transport.connect("smtp.googlemail.com", username, password);
 		            transport.sendMessage(mailMessage, mailMessage.getAllRecipients());
 		            transport.close();
 

@@ -8,8 +8,6 @@ import java.io.File;
  * Created by hpduy17 on 12/2/14.
  */
 public class LoggerFactory {
-    public static final String REQUEST = "[ CLIENT REQUEST ] - ";
-    public static final String RESPONSE = "[ SERVER RESPONSE ] - ";
     public static Logger createLogger(Class c) {
         Logger logger = Logger.getLogger(c);
         try {
